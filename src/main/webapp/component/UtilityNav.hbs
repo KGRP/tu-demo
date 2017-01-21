@@ -1,0 +1,18 @@
+{{#defineBlock "UtilityNav"}}
+    {{#defineBlockContainer}}
+        {{#defineBlockBody}}
+            <nav class="clearfix" id="utilityNav">
+                {{#each navLinks}}
+                    <a href="{{this.href}}" class="{{this.extraAttributes.class}}"><span>{{this.body}}</span></a>
+                {{/each}}
+                <span class="divider">|</span>
+                {{#with memberLoginLink}}
+                    <a data-target="bizLoginNav" class="bizLogin toggleMenu" href="{{this.href}}">{{this.body}}
+                    <span class="fa fa-caret-right"></span></a>
+                {{/with}}
+                <span class="divider">|</span>
+                {{languageNav}}
+            </nav>
+        {{/defineBlockBody}}
+    {{/defineBlockContainer}}
+{{/defineBlock}}

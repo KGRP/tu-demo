@@ -1,0 +1,39 @@
+{
+    "_template": "/base/page/Head",
+    "title": "{{words(3)}}",
+    "description": "{{words(10)}}",
+    "keywords": "{{words(1)}}",
+    "items": [
+        {
+            "_template": "/base/page/Meta",
+            "httpEquiv": "X-UA-Compatible",
+            "content": "IE=edge"
+        },
+        {
+            "_template": "/base/page/Meta",
+            "name": "viewport",
+            "content": "width=device-width, initial-scale=1"
+        },
+        {
+            "_template": "/base/page/ExternalStylesheet",
+            "href": "{{stylesheet}}",
+            "rel": "stylesheet"
+        },
+        {
+            "_template": "/base/page/ExternalScript",
+            "src": "#"
+        },
+        {
+            "_template": "/base/page/InlineScript",
+            "script": "{{words(50)}}"
+        },
+        {
+            "_template": "/base/page/InlineStylesheet",
+            "css": "{{words(50)}}"
+        },
+        {
+            "_template": "/base/util/RawHtml",
+            "html": "<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries --><!-- WARNING: Respond.js doesn't work if you view the page via file:// --><!--[if lt IE 9]><script src=\"https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js\"></script><script src=\"https://oss.maxcdn.com/respond/1.4.2/respond.min.js\"></script><![endif]-->"
+        }
+    ]
+}

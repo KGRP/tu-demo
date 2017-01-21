@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context>
+    <Resources cachingAllowed="false" />
+
+    <Environment name="PRODUCTION" type="java.lang.Boolean" value="false" />
+
+    <!-- Database -->
+    <Environment name="dari/defaultDatabase" type="java.lang.String" value="demo.local" />
+    <Environment name="dari/database/demo.local/class" type="java.lang.String" value="com.psddev.dari.db.AggregateDatabase" />
+    <Environment name="dari/database/demo.local/defaultDelegate" type="java.lang.String" value="sql" />
+
+    <!-- SQL via embedded MySQL -->
+    <Environment name="dari/database/demo.local/delegate/sql/class" type="java.lang.String" value="com.psddev.dari.db.SqlDatabase" />
+    <Environment name="dari/database/demo.local/delegate/sql/jdbcUrl" type="java.lang.String" value="jdbc:mysql:mxj://localhost:${mysql.port}/demo?server.basedir=C%3A%5CUsers%5Crpatel%2F.brightspot%2Fcom.klishgroup%2Fdemo%2Fmysql&amp;server.initialize-user=true&amp;createDatabaseIfNotExist=true&amp;useConfigs=maxPerformance&amp;enableQueryTimeouts=true&amp;clobberStreamingResults=true" />
+    <Environment name="dari/database/demo.local/delegate/sql/jdbcUser" type="java.lang.String" value="root" />
+    <Environment name="dari/database/demo.local/delegate/sql/jdbcPassword" type="java.lang.String" value="" />
+
+    <!-- Solr -->
+    <Environment name="dari/database/demo.local/delegate/solr/class" type="java.lang.String" value="com.psddev.dari.db.SolrDatabase" />
+    <Environment name="dari/database/demo.local/delegate/solr/groups" type="java.lang.String" value="-* +cms.content.searchable" />
+    <Environment name="dari/database/demo.local/delegate/solr/serverUrl" type="java.lang.String" value="http://localhost:${tomcat.port}/solr" />
+
+    <!-- Storage -->
+    <Environment name="dari/defaultStorage" type="java.lang.String" value="demo.local" />
+    <Environment name="dari/storage/demo.local/class" type="java.lang.String" value="com.psddev.dari.util.LocalStorageItem" />
+    <Environment name="dari/storage/demo.local/baseUrl" type="java.lang.String" value="http://localhost:${tomcat.port}/storage" />
+    <Environment name="dari/storage/demo.local/rootPath" type="java.lang.String" value="C:\Users\rpatel/.brightspot/com.klishgroup/demo/storage" />
+</Context>

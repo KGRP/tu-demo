@@ -1,0 +1,44 @@
+{{#defineBlock "HomePageLede"}}
+    {{#defineBlockContainer}}
+        {{#defineBlockBody}}
+            <section id="heroComponent" class="wrapper heroWrapper">
+                <div class="heroPersonal">
+                    <div class="heroImageWrap hidden-xs hidden-sm">
+                        <div class="heroImage" style="background-image: url({{image}})">
+                        </div>
+                    </div>
+                    <div class="heroImageWrap hidden-xs hidden-md hidden-lg">
+                        <div class="heroImage" style="background-image: url({{image}})">
+                        </div>
+                    </div>
+
+                    <div class="container">
+                        <div class="row">
+                            <div class="heroContent clearfix">
+                                <div class="heroContentTop personalHero clearfix">
+                                    {{#with headline1}}<h1 class="primaryHeadline"><span>{{this}}<sup>®</sup></span></h1>{{/with}}
+                                </div>
+                                <div class="mobileHeroImageWrap hidden-sm hidden-md hidden-lg">
+                                    <div class="mobileHeroImage" style="background-image: url({{mobileImage}})">
+                                    </div>
+                                </div>
+                                <div class="heroContentBottom clearfix">
+                                    {{#with headline2}}<p class="largeText">{{this}}</p>{{/with}}
+                                    {{#with headline3}}<p class="smallText"><span style="background-color:#FCD800">{{this}}</span></p>{{/with}}
+                                    {{#with ctaButton}}
+                                        <a href="{{this.href}}" class="btn btn tui-orange-btn shadow homePageBannerCTA"><span>{{this.body}} {{#with this.icon}}<span class="{{this}}"></span>{{/with}}</span> </a>
+                                    {{/with}}
+                                    {{#with alreadyMemberLink}}
+                                        <p class="loginMsg">
+                                            {{this}}
+                                        </p>
+                                    {{/with}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        {{/defineBlockBody}}
+    {{/defineBlockContainer}}
+{{/defineBlock}}

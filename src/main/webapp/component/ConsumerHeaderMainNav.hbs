@@ -1,0 +1,38 @@
+{{#defineBlock "ConsumerHeaderMainNav"}}
+    {{#defineBlockContainer}}
+        {{#defineBlockBody}}
+            <nav id="mainNav">
+                <ul class="nav nav-tabs">
+                    {{#each nodes}}
+                        <li role="presentation">
+                            <a class="toggleMenu" href="#" data-target="{{this.id}}IdSubNav">{{this.title}}</a>
+                            <div style="display: none" class="dtSubNav" id="{{this.id}}IdSubNav">
+                                <div class="container">
+                                    <ul class="subNav" id="{{this.id}}IdSubNavContent">
+                                        {{#each links}}
+                                            <li>
+                                                <a href="{{this.href}}" target="">
+                                                    {{this.body}}
+                                                    <span style="visibility:hidden;">{{this.index}}</span></a>
+                                            </li>
+                                        {{/each}}
+                                    </ul>
+                                    <ul class="subNavMoreInfo hidden-xs hidden-sm"
+                                        id="{{this.id}}IdInfo">
+                                        {{#each links}}
+                                            <li style="display:none"
+                                                id="{{this.id}}{{this.index}}SubNavMoreInfo">
+                                                <span class="subNavTitle">{{this.body}}</span>
+                                                <p>{{this.description}}</p>
+                                            </li>
+                                        {{/each}}
+                                    </ul>
+                                </div>
+                            </div>
+                        </li>
+                    {{/each}}
+                </ul>
+            </nav>
+        {{/defineBlockBody}}
+    {{/defineBlockContainer}}
+{{/defineBlock}}

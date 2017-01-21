@@ -1,0 +1,89 @@
+{
+    "_template": "/common/Page",
+    "head": {
+        "_dataUrl": "/common/page-head.json"
+    },
+    "body": {
+        "_template": "/base/util/Concatenated",
+        "items": [
+            {
+                "_template": "/base/util/RawHtml",
+                "html": "Header HTML"
+            },
+            {
+                "_template": "/component/HomePageLede",
+                "headline1": "",
+                "headline2": "",
+                "headline3": "",
+                "ctaButton": {
+                    "_template": "/base/util/Link",
+
+                    "href": "#",
+                    "body": "SEE YOURS NOW"
+                },
+                "alreadyMemberLink": {
+                    "_template": "/base/util/RawHtml",
+                    "html": "Already Member Link"
+                },
+                "image": "Link to large background Image",
+                "mobileImage": "Link to mobile background Image"
+            },
+            {
+                "_template": "/component/BannerCarousel",
+                "slides": [
+                    {
+                        "_template": "/component/BannerCarouselSlide",
+
+                        "index": 1,
+                        "slideTo": 0,
+                        "active": true,
+                        "eyebrowTitle": "",
+                        "title": "",
+                        "body": "",
+                        "ctaButton": {
+                            "_template": "/base/util/Link",
+
+                            "href": "#",
+                            "body": "",
+                            "icon": ""
+                        },
+                        "image": "",
+                        "mobileImage": ""
+                    },
+                    {
+                        "_template": "/component/BannerCarouselSlide",
+
+                        "index": 2,
+                        "slideTo": 1,
+                        "eyebrowTitle": "",
+                        "title": "",
+                        "body": "",
+                        "ctaButton": {
+                            "_template": "/base/util/Link",
+
+                            "href": "#",
+                            "body": "",
+                            "icon": ""
+                        },
+                        "image": "",
+                        "mobileImage": ""
+                    }
+                ]
+            },
+            {
+                "_template": "/component/Offer",
+                "content": {
+                    "_template": "/base/util/RawHtml",
+                    "html": "Offer HTML"
+                }
+            },
+            {
+                "_template": "/base/util/RawHtml",
+                "html": "Footer HTML"
+            }
+        ]
+    },
+    "extraAttributes": {
+        "class": "test"
+    }
+}

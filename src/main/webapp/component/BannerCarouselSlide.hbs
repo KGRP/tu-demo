@@ -1,0 +1,46 @@
+{{#defineBlock "BannerCarouselSlide"}}
+    {{#defineBlockContainer}}
+        {{#defineBlockBody}}
+            <div class="item {{#if active}}active{{/if}}">
+                <div class="hero heroCarousel">
+                    {{#with image}}
+                        <div class="heroImageWrap hidden-xs">
+                            <div class="heroImage" style="background-image: url({{this}})"></div>
+                        </div>
+                    {{/with}}
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-sm-12 col-lg-7 col-lg-8 heroContent clearfix">
+                                {{#with mobileImage}}
+                                    <div class="mobileHeroImageWrap hidden-sm hidden-md hidden-lg">
+                                        <div class="mobileHeroImage" style="background-image: url({{this}})"></div>
+                                    </div>
+                                {{/with}}
+                                {{#with eyebrowTitle}}
+                                    <div class="eyebrow">{{this}}</div>
+                                {{/with}}
+                                {{#with title}}
+                                    <h1 class="primaryHeadline">{{this}}</h1>
+                                {{/with}}
+                                {{#with body}}
+                                    <div>
+                                        <p>{{this}}</p>
+                                    </div>
+                                {{/with}}
+                                {{#with ctaButton}}
+                                    <a href="{{this.href}}" target="_blank"
+                                       class="btn tui-orange-btn tui-orange-tall-btn shadow">
+                                        <span>{{this.body}}</span>
+                                        {{#with this.icon}}
+                                            <i class="{{this}}"></i>
+                                        {{/with}}
+                                    </a>
+                                {{/with}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {{/defineBlockBody}}
+    {{/defineBlockContainer}}
+{{/defineBlock}}

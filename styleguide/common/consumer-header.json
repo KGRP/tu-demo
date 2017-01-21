@@ -1,0 +1,108 @@
+{
+  "_template": "/common/ConsumerHeader",
+  "logoUrl": "#",
+  "logoLink": {
+    "_template": "/base/util/Link",
+    "href": "#"
+  },
+  "targetNav": {
+    "_template": "/component/TargetNav",
+    "navLinks": [
+      {
+        "_template": "/base/util/Link",
+        "href": "#",
+        "body": "",
+        "extraAttributes": {
+          "class": "test"
+        }
+      },
+      {
+        "_template": "/base/util/Link",
+        "href": "#",
+        "body": ""
+      }
+    ],
+    "searchURL": "#",
+    "cancelLabel": "Cancel"
+  },
+  "utilityNav": {
+    "_template": "/component/UtilityNav",
+    "navLinks": [
+      {
+        "_template": "/base/util/Link",
+        "href": "#",
+        "body": ""
+      },
+      {
+        "_template": "/base/util/Link",
+        "href": "#",
+        "body": ""
+      }
+    ],
+    "memberLoginLink": {
+      "_template": "/base/util/Link",
+      "href": "#",
+      "body": ""
+    },
+    "languageNav": {
+      "_template": "/component/LanguageNav",
+      "countries": [
+        {
+          "_template": "/base/util/Link",
+          "href": "#",
+          "body": "",
+          "extraAttributes": {
+            "class": "flag us"
+          }
+        },
+        {
+          "_template": "/base/util/Link",
+          "href": "#",
+          "body": "",
+          "extraAttributes": {
+            "class": "flag br"
+          }
+        }
+      ]
+    },
+    "searchURL": "#"
+  },
+  "mainNav": {
+    "_template": "/component/ConsumerHeaderMainNav",
+    "nodes": [
+      {
+        "_template": "/component/MainNavNode",
+        "title": "",
+        "id": "",
+        "links": [
+          {
+            "_template": "/base/util/Link",
+            "index": "0",
+            "id": "",
+            "href": "#",
+            "body": "",
+            "description": ""
+          },
+          {
+            "_template": "/base/util/Link",
+            "index": "1",
+            "id": "",
+            "href": "#",
+            "body": "",
+            "description": ""
+          }
+        ]
+      }
+    ]
+  },
+  "callToAction": {
+    "_template": "/component/ConsumerHeaderCallToAction",
+    "desktopLabel": "",
+    "mobileLabel": "",
+    "link": {
+      "_template": "/base/util/Link",
+      "href": "#",
+      "body": ""
+    }
+  }
+}

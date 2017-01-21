@@ -1,0 +1,35 @@
+{{#defineBlock "ConsumerHeader"}}
+    {{#defineBlockContainer}}
+        {{#defineBlockBody}}
+            <header class="personalHeader" id="headerWrapper">
+                <div id="headerMain">
+                    <a onClick="toggleMobileMenu(); return false" href="#" class="hidden-md hidden-lg"
+                       id="mobiNavActivate"><span></span><span></span><span></span><span></span></a>
+                    <div itemtype="http://schema.org/Organization" id="headerLogo" itemscope="">
+                        <a itemprop="url" href="{{logoLink.href}}"><img src="{{logoUrl}}" alt="TransUnion"></a>
+                    </div>
+                    <div id="logoDivider"></div>
+                    <div id="mobileMainNav">
+                        {{targetNav}}
+                        {{mainNav}}
+                        {{utilityNav}}
+                        <div id="searchContact">
+                            <div id="searchContainer">
+                                <span class="fa fa-search"></span>
+                                <form method="get" action="{{utilityNav.searchURL}}">
+                                    <label style="display: none" for="searchField" class="hideLabel">Search</label>
+                                    <input name="query" id="searchBox" type="text">
+                                    <button style="display:none" class="clearBtn personalClearBtn" type="reset">
+                                        <span class="fa fa-times"></span>
+                                    </button>
+                                </form>
+                            </div>
+                            {{callToAction}}
+                        </div>
+                    </div>
+                    <div class="hidden-md hidden-lg" id="mobileFade"></div>
+                </div>
+            </header>
+        {{/defineBlockBody}}
+    {{/defineBlockContainer}}
+{{/defineBlock}}

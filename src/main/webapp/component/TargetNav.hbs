@@ -1,0 +1,27 @@
+{{#defineBlock "TargetNav"}}
+    {{#defineBlockContainer}}
+        {{#defineBlockBody}}
+            <nav id="targetNav">
+                <div class="targetNavLinks">
+                    {{#each navLinks}}
+                        <a href="{{this.href}}" {{#if this.extraAttributes.active}}class="active"{{/if}}><span>{{this.body}}</span></a>
+                    {{/each}}
+                    <a onClick="showSearchField(); return false" class="searchLink hidden-md hidden-lg" href="#">
+                        <span class="fa fa-search"></span>
+                    </a>
+                </div>
+                <span class="blue-bar"></span>
+                <div style="display:none" class="searchBox">
+                    <form method="get" action="{{searchURL}}">
+                        <span class="fa fa-search"></span><label style="display: none" for="searchField"
+                                                                 class="hideLabel">Search</label><input name="query"
+                                                                                                        class="searchField"
+                                                                                                        type="text">
+                        <button class="clearBtn" type="reset"><span class="fa fa-times"></span></button>
+                        <a onClick="hideSearchField(); return false" class="cancelLink" href="#">{{cancelLabel}}</a>
+                    </form>
+                </div>
+            </nav>
+        {{/defineBlockBody}}
+    {{/defineBlockContainer}}
+{{/defineBlock}}

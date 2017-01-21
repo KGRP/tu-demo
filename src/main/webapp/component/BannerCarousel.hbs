@@ -1,0 +1,19 @@
+{{#defineBlock "BannerCarousel"}}
+    {{#defineBlockContainer}}
+        {{#defineBlockBody}}
+            <section class="wrapper heroWrapper carousel slide" id="heroComponentCarousel">
+                <ol style="font-size:60px;" class="carousel-indicators">
+                    {{#each slides}}
+                        <li data-target="#heroComponentCarousel" {{#if this.active}}class="active"{{/if}}
+                            data-slide-to="{{this.slideTo}}"></li>
+                    {{/each}}
+                </ol>
+                <div class="carousel-inner">
+                    {{#each slides}}
+                        {{this}}
+                    {{/each}}
+                </div>
+            </section>
+        {{/defineBlockBody}}
+    {{/defineBlockContainer}}
+{{/defineBlock}}
