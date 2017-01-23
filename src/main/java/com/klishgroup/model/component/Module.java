@@ -1,6 +1,6 @@
 package com.klishgroup.model.component;
 
-import com.psddev.dari.db.Record;
+import com.psddev.cms.db.Content;
 
-public abstract class Module extends Record {
+public abstract class Module extends Content {
 }

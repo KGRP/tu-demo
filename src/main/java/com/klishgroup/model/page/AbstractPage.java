@@ -4,6 +4,7 @@ import com.klishgroup.model.Resource;
 import com.klishgroup.model.component.AbstractHeader;
 import com.klishgroup.model.component.Module;
 import com.klishgroup.model.component.RawContent;
+import com.klishgroup.targetting.Targeted;
 import com.klishgroup.viewmodel.PageViewModel;
 import com.psddev.cms.db.Content;
 import com.psddev.cms.db.PageFilter;
@@ -11,9 +12,6 @@ import com.psddev.cms.db.ToolUi;
 import com.psddev.cms.view.ViewBinding;
 import com.psddev.dari.db.Recordable;
 import com.psddev.dari.util.ObjectUtils;
-import com.psddev.personalization.Audience;
-import com.psddev.personalization.AudienceParticipant;
-import com.psddev.personalization.Variation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +22,9 @@ public class AbstractPage extends Content {
     @Required
     private String name;
 
-    private AbstractHeader header;
+    @Required
+    @Embedded
+    private Targeted targetedHeader;
 
     private List<Module> modules;
 
@@ -51,12 +51,12 @@ public class AbstractPage extends Content {
         this.name = name;
     }
 
-    public AbstractHeader getHeader() {
-        return header;
+    public Targeted getTargetedHeader() {
+        return targetedHeader;
     }
 
-    public void setHeader(AbstractHeader header) {
-        this.header = header;
+    public void setTargetedHeader(Targeted targetedHeader) {
+        this.targetedHeader = targetedHeader;
     }
 
     public List<Module> getModules() {

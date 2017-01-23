@@ -2,16 +2,15 @@ package com.klishgroup.model.component;
 
 import com.klishgroup.model.CountrySite;
 import com.klishgroup.model.Link;
-import com.klishgroup.model.targetting.Taggable;
+import com.klishgroup.targetting.Taggable;
 import com.psddev.cms.db.ToolUi;
-import com.psddev.dari.db.Record;
 import com.psddev.dari.util.ObjectUtils;
 import com.psddev.dari.util.StorageItem;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class AbstractHeader extends Record implements Taggable {
+public abstract class AbstractHeader extends Module implements Taggable {
 
     @Required
     @ToolUi.Note("CMS Only")

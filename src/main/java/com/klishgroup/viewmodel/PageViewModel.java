@@ -101,7 +101,9 @@ public class PageViewModel extends AbstractViewModel<Content> implements PageVie
 
             AbstractPage page = (AbstractPage) model;
 
-            pageLayoutView.addToItems(createView(AbstractViewModel.MODULE_VIEW_TYPE, page.getHeader()));
+            page.getTargetedHeader().getModules(getRequest())
+                    .stream()
+                    .forEach(module -> pageLayoutView.addToItems(createView(AbstractViewModel.MODULE_VIEW_TYPE, module)));
             page.getModules()
                     .stream()
                     .filter(Objects::nonNull)
