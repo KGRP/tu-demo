@@ -78,6 +78,47 @@
                 }
             },
             {
+                "_template": "/component/InsightsAndEvents",
+
+                "title": "Insights and events",
+                "viewAll": {
+                    "_template": "/base/util/Link",
+
+                    "href": "#",
+                    "body": ""
+                },
+                "content": {
+                    "_template": "/base/util/Concatenated",
+
+                    "items": [
+                        {
+                            "_template": "/component/InsightOrEvent",
+                            "eyebrowTitle": "",
+                            "description": "",
+                            "ctaButton": {
+                                "_template": "/base/util/Link",
+
+                                "href": "#",
+                                "body": ""
+                            },
+                            "thumbnail": ""
+                        },
+                        {
+                            "_template": "/component/InsightOrEvent",
+                            "eyebrowTitle": "",
+                            "description": "",
+                            "ctaButton": {
+                                "_template": "/base/util/Link",
+
+                                "href": "#",
+                                "body": ""
+                            },
+                            "thumbnail": ""
+                        }
+                    ]
+                }
+            },
+            {
                 "_template": "/base/util/RawHtml",
                 "html": "Footer HTML"
             }

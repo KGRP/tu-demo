@@ -1,0 +1,18 @@
+{{#defineBlock "InsightOrEvent"}}
+    {{#defineBlockContainer}}
+        {{#defineBlockBody}}
+            <a class="insight " href="{{ctaButton.href}}">
+                <div class="insightContainer">
+                    <img class="caseStudyImage" src="{{thumbnail}}">
+                    <div class="insightText">
+                        <div itemprop="name" class="eyebrow">{{eyebrowTitle}}</div>
+                        <p itemprop="description">{{description}}</p>
+                        <meta itemprop="description" content="{{description}}">
+                        <div itemprop="name headline" class="insightLink">{{ctaButton.body}}<span class="fa fa-caret-right"></span></div>
+                    </div>
+                </div>
+                <hr>
+            </a>
+        {{/defineBlockBody}}
+    {{/defineBlockContainer}}
+{{/defineBlock}}

@@ -29,7 +29,7 @@
                                 {{/with}}
                                 {{#with ctaButton}}
                                     <a href="{{this.href}}" target="_blank"
-                                       class="btn tui-orange-btn tui-orange-tall-btn shadow">
+                                       class="{{this.extraAttributes.css}}">
                                         <span>{{this.body}}</span>
                                         {{#with this.icon}}
                                             <i class="{{this}}"></i>

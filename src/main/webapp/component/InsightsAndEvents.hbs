@@ -1,0 +1,26 @@
+{{#defineBlock "InsightsAndEvents"}}
+    {{#defineBlockContainer}}
+        {{#defineBlockBody}}
+            <a class="navHeading" id="InsightsSection" data-nav="Insights"></a>
+            <section class="wrapper insightsWrapper" id="insightsComponent">
+                <div class="container">
+                    <a class="btn btn-default viewAllBtn" href="{{viewAll.href}}"><span>{{viewAll.body}}</span></a>
+                    <div class="row insightTopContent">
+                        <div class="col-lg-10 col-lg-offset-1 col-xs-12">
+                            <div class="topHeader">
+                                <div class="labelHead">{{title}}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-10 col-lg-offset-1 col-xs-12">
+                            <div class="row insightsList">
+                                {{content}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        {{/defineBlockBody}}
+    {{/defineBlockContainer}}
+{{/defineBlock}}

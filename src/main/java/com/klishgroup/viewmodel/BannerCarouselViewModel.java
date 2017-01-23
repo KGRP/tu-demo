@@ -34,7 +34,9 @@ public class BannerCarouselViewModel extends AbstractViewModel<BannerCarousel> i
                             .ctaButton((ObjectUtils.isBlank(slide.getCtaButton()) ? null : new LinkView.Builder()
                                     .href(slide.getCtaButton().getHref())
                                     .body(slide.getCtaButton().getText())
-                                    .icon(slide.getCtaButton().getIcon().getCssClass())
+                                    .icon((!ObjectUtils.isBlank(slide.getCtaButton().getIcon())) ?
+                                            slide.getCtaButton().getIcon().getCssClass() : null)
+                                    .addExtraAttributes("css", slide.getButtonType().getCss())
                                     .build()))
                             .image((ObjectUtils.isBlank(slide.getDesktopImage()) ? null : slide.getDesktopImage().getPublicUrl()))
                             .mobileImage((ObjectUtils.isBlank(slide.getMobileImage()) ? null : slide.getMobileImage().getPublicUrl()))

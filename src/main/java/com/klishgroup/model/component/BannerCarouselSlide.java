@@ -15,11 +15,13 @@ public class BannerCarouselSlide extends Record {
     @Recordable.Required
     private String title;
 
-    @Recordable.Required
     private String body;
 
     @Recordable.Required
     private Link ctaButton;
+
+    @Recordable.Required
+    private CTAButtonType buttonType;
 
     private StorageItem desktopImage;
 
@@ -71,5 +73,28 @@ public class BannerCarouselSlide extends Record {
 
     public void setMobileImage(StorageItem mobileImage) {
         this.mobileImage = mobileImage;
+    }
+
+    public CTAButtonType getButtonType() {
+        return buttonType;
+    }
+
+    public void setButtonType(CTAButtonType buttonType) {
+        this.buttonType = buttonType;
+    }
+
+    public enum CTAButtonType {
+        ORANGE("btn btn tui-orange-btn shadow homePageBannerCTA"),
+        YELLOW("btn btn-primary shadow");
+
+        private String css;
+
+        CTAButtonType(String css) {
+            this.css = css;
+        }
+
+        public String getCss() {
+            return css;
+        }
     }
 }
