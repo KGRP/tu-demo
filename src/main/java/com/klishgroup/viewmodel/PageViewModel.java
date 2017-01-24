@@ -1,6 +1,7 @@
 package com.klishgroup.viewmodel;
 
 import com.klishgroup.model.Resource;
+import com.klishgroup.model.SiteSettings;
 import com.klishgroup.model.page.AbstractPage;
 import com.klishgroup.view.base.page.ExternalScriptView;
 import com.klishgroup.view.base.page.ExternalStylesheetView;
@@ -80,10 +81,12 @@ public class PageViewModel extends AbstractViewModel<Content> implements PageVie
                 itemsList.addAll(getMeta());
 
                 if (model instanceof AbstractPage) {
+                    itemsList.addAll(createCssResourceView(getSite().as(SiteSettings.class).getHeadResources()));
                     itemsList.addAll(createCssResourceView(((AbstractPage) model).getHeadResources()));
                 }
 
                 if (model instanceof AbstractPage) {
+                    itemsList.addAll(createJsResourceView(getSite().as(SiteSettings.class).getHeadResources()));
                     itemsList.addAll(createJsResourceView(((AbstractPage) model).getHeadResources()));
                 }
 
@@ -109,6 +112,9 @@ public class PageViewModel extends AbstractViewModel<Content> implements PageVie
                     .filter(Objects::nonNull)
                     .forEach(module -> pageLayoutView.addToItems(createView(AbstractViewModel.MODULE_VIEW_TYPE, module)));
             pageLayoutView.addToItems(createView(AbstractViewModel.MODULE_VIEW_TYPE, page.getFooter()));
+            if (!ObjectUtils.isBlank(getSite())) {
+                pageLayoutView.addAllToItems(createJsResourceView(getSite().as(SiteSettings.class).getBodyResources()));
+            }
             pageLayoutView.addAllToItems(createJsResourceView(page.getBodyResources()));
             pageLayoutView.addToItems(new InlineStylesheetView.Builder()
                     .css(((AbstractPage) model).getExtraCss())

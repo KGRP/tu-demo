@@ -2,6 +2,7 @@ package com.klishgroup.model.page;
 
 import com.klishgroup.model.Resource;
 import com.klishgroup.model.component.AbstractHeader;
+import com.klishgroup.model.component.Footer;
 import com.klishgroup.model.component.Module;
 import com.klishgroup.model.component.RawContent;
 import com.klishgroup.targetting.Targeted;
@@ -24,12 +25,12 @@ public class AbstractPage extends Content {
 
     @Required
     @Embedded
-    private Targeted targetedHeader;
+    private Targeted.SingleContent targetedHeader;
 
     private List<Module> modules;
 
     @ToolUi.RichText
-    private RawContent footer;
+    private Footer footer;
 
     @ToolUi.Tab("Resources")
     private List<Resource> headResources;
@@ -51,11 +52,11 @@ public class AbstractPage extends Content {
         this.name = name;
     }
 
-    public Targeted getTargetedHeader() {
+    public Targeted.SingleContent getTargetedHeader() {
         return targetedHeader;
     }
 
-    public void setTargetedHeader(Targeted targetedHeader) {
+    public void setTargetedHeader(Targeted.SingleContent targetedHeader) {
         this.targetedHeader = targetedHeader;
     }
 
@@ -70,11 +71,11 @@ public class AbstractPage extends Content {
         this.modules = modules;
     }
 
-    public RawContent getFooter() {
+    public Footer getFooter() {
         return footer;
     }
 
-    public void setFooter(RawContent footer) {
+    public void setFooter(Footer footer) {
         this.footer = footer;
     }
 

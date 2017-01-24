@@ -1,5 +1,5 @@
 {
-  "_template": "/common/ConsumerHeader",
+  "_template": "/common/Header",
   "logoUrl": "#",
   "logoLink": {
     "_template": "/base/util/Link",

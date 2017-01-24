@@ -1,5 +1,6 @@
 package com.klishgroup.model.component;
 
+import com.klishgroup.model.InsightOrEvent;
 import com.klishgroup.model.Link;
 import com.klishgroup.viewmodel.AbstractViewModel;
 import com.klishgroup.viewmodel.InsightsAndEventsViewModel;
@@ -21,6 +22,8 @@ public class InsightsAndEvents extends Module {
 
     @ToolUi.ReadOnly
     private String insightsOrEvents = "Most recent 4 insights and events";
+
+    private InsightOrEvent defaultInsightOrEvent;
 
     public String getName() {
         return name;
@@ -52,5 +55,13 @@ public class InsightsAndEvents extends Module {
 
     public void setInsightsOrEvents(String insightsOrEvents) {
         this.insightsOrEvents = insightsOrEvents;
+    }
+
+    public InsightOrEvent getDefaultInsightOrEvent() {
+        return defaultInsightOrEvent;
+    }
+
+    public void setDefaultInsightOrEvent(InsightOrEvent defaultInsightOrEvent) {
+        this.defaultInsightOrEvent = defaultInsightOrEvent;
     }
 }

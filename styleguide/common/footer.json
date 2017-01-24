@@ -1,0 +1,60 @@
+{
+  "_template": "/common/Footer",
+  "titledSections": {
+    "_template" : "/base/util/Concatenated",
+
+    "items": [
+      {
+      "_template": "/component/FooterTitledLinkList",
+
+      "title": "",
+      "links": [
+        {
+          "_template": "/base/util/Link",
+          "href": "#",
+          "body": ""
+        },
+        {
+          "_template": "/base/util/Link",
+          "href": "#",
+          "body": ""
+        }
+      ]
+      }
+    ]
+  },
+  "miscellaneousLinks" : [
+    {
+      "_template": "/base/util/Link",
+      "href": "#",
+      "body": ""
+    },
+    {
+      "_template": "/base/util/Link",
+      "href": "#",
+      "body": ""
+    }
+  ],
+  "callToAction": {
+    "_template": "/component/FooterCallToAction",
+
+    "title": "",
+    "link": {
+      "_template": "/base/util/Link",
+      "href": "#",
+      "body": ""
+    }
+  },
+  "socialLinks" : [
+    {
+      "_template": "/base/util/Link",
+      "href": "#",
+      "body": ""
+    },
+    {
+      "_template": "/base/util/Link",
+      "href": "#",
+      "body": ""
+    }
+  ]
+}

@@ -1,9 +1,13 @@
 {{#defineBlock "LanguageNav"}}
     {{#defineBlockContainer}}
         {{#defineBlockBody}}
-            <a data-target="languageNav" class="language toggleMenu" href="{{countries.1.href}}">
-                <span class="{{countries.1.extraAttributes.class}}"></span>{{countries.1.extraAttributes.language}}
-            </a>
+            {{#each countries}}
+                {{#if this.extraAttributes.default}}
+                    <a data-target="languageNav" class="language toggleMenu" href="{{this.href}}">
+                        <span class="{{this.extraAttributes.class}}"></span>{{this.extraAttributes.language}}
+                    </a>
+                {{/if}}
+            {{/each}}
             <ul style="display:none" class="utilityDropDown" id="languageNav">
                 {{#each countries}}
                     <li>

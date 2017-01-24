@@ -1,15 +1,20 @@
 package com.klishgroup.model.component;
 
+import com.klishgroup.model.CallToAction;
 import com.klishgroup.model.CountrySite;
 import com.klishgroup.model.Link;
 import com.klishgroup.targetting.Taggable;
+import com.klishgroup.viewmodel.AbstractHeaderViewModel;
+import com.klishgroup.viewmodel.AbstractViewModel;
 import com.psddev.cms.db.ToolUi;
+import com.psddev.cms.view.ViewBinding;
 import com.psddev.dari.util.ObjectUtils;
 import com.psddev.dari.util.StorageItem;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@ViewBinding(value = AbstractHeaderViewModel.class, types = { AbstractViewModel.MODULE_VIEW_TYPE })
 public abstract class AbstractHeader extends Module implements Taggable {
 
     @Required
@@ -25,6 +30,39 @@ public abstract class AbstractHeader extends Module implements Taggable {
 
     @ToolUi.Tab("Country Sites")
     private List<CountrySite> countrySites;
+
+    @Required
+    private CallToAction callToAction;
+
+    @Required
+    private Link memberLogin;
+
+    @Required
+    private Link searchPage;
+
+    public CallToAction getCallToAction() {
+        return callToAction;
+    }
+
+    public void setCallToAction(CallToAction callToAction) {
+        this.callToAction = callToAction;
+    }
+
+    public Link getMemberLogin() {
+        return memberLogin;
+    }
+
+    public void setMemberLogin(Link memberLogin) {
+        this.memberLogin = memberLogin;
+    }
+
+    public Link getSearchPage() {
+        return searchPage;
+    }
+
+    public void setSearchPage(Link searchPage) {
+        this.searchPage = searchPage;
+    }
 
     public String getName() {
         return name;

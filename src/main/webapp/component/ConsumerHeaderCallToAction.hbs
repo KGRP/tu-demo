@@ -1,11 +1,11 @@
 {{#defineBlock "ConsumerHeaderCallToAction"}}
     {{#defineBlockContainer}}
         {{#defineBlockBody}}
-            <a class="btn tui-orange-btn shadow hidden-xs hidden-sm"
+            <a class="{{link.extraAttributes.desktopCSS}} hidden-xs hidden-sm"
                href="{{link.href}}">
                 {{desktopLabel}}
             </a>
-            <a class="btn tui-orange-btn tui-orange-tall-btn shadow hidden-lg hidden-md"
+            <a class="{{link.extraAttributes.mobileCSS}} hidden-lg hidden-md"
                href="{{link.href}}">
                 {{mobileLabel}}
             </a>

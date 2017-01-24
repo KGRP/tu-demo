@@ -117,10 +117,6 @@
                         }
                     ]
                 }
-            },
-            {
-                "_template": "/base/util/RawHtml",
-                "html": "Footer HTML"
             }
         ]
     },

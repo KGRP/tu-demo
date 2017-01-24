@@ -1,4 +1,4 @@
-package com.klishgroup.model.targetting;
+package com.klishgroup.targetting;
 
 import com.psddev.cms.db.ToolUi;
 import com.psddev.dari.db.Modification;
@@ -14,6 +14,8 @@ public interface Taggable extends Recordable {
         return this.as(Taggable.Data.class).getTags();
     }
 
+    @Recordable.BeanProperty("taggable")
+    @Recordable.FieldInternalNamePrefix("tg.")
     class Data extends Modification<Taggable> {
 
         @ToolUi.Tab("Tagging")

@@ -1,0 +1,106 @@
+{
+  "_template": "/common/Header",
+  "mainNav": {
+    "_template": "/component/BusinessHeaderMainNav",
+
+    "solutionsAndProducts": {
+      "_template": "/component/MainNavNode",
+      "title": "",
+      "id": "",
+      "subNavs": [
+        {
+          "_template": "/component/MainNavSubNav",
+          "title": "",
+          "id": "",
+          "links": [
+            {
+              "_template": "/base/util/Link",
+              "index": "0",
+              "id": "",
+              "href": "#",
+              "body": "",
+              "description": ""
+            },
+            {
+              "_template": "/base/util/Link",
+              "index": "1",
+              "id": "",
+              "href": "#",
+              "body": "",
+              "description": ""
+            }
+          ]
+        }
+      ]
+    },
+    "industries": {
+      "_template": "/component/MainNavNode",
+      "title": "",
+      "id": "",
+      "links": [
+        {
+          "_template": "/base/util/Link",
+          "index": "0",
+          "id": "",
+          "href": "#",
+          "body": "",
+          "description": ""
+        },
+        {
+          "_template": "/base/util/Link",
+          "index": "1",
+          "id": "",
+          "href": "#",
+          "body": "",
+          "description": ""
+        }
+      ]
+    },
+    "insightsAndEvents": {
+      "_template": "/component/MainNavNode",
+      "title": "",
+      "id": "",
+      "content": {
+        "_template": "/component/InsightsAndEvents",
+
+        "title": "Insights and events",
+        "viewAll": {
+          "_template": "/base/util/Link",
+
+          "href": "#",
+          "body": ""
+        },
+        "content": {
+          "_template": "/base/util/Concatenated",
+
+          "items": [
+            {
+              "_template": "/component/InsightOrEvent",
+              "eyebrowTitle": "",
+              "description": "",
+              "ctaButton": {
+                "_template": "/base/util/Link",
+
+                "href": "#",
+                "body": ""
+              },
+              "thumbnail": ""
+            },
+            {
+              "_template": "/component/InsightOrEvent",
+              "eyebrowTitle": "",
+              "description": "",
+              "ctaButton": {
+                "_template": "/base/util/Link",
+
+                "href": "#",
+                "body": ""
+              },
+              "thumbnail": ""
+            }
+          ]
+        }
+      }
+    }
+  }
+}

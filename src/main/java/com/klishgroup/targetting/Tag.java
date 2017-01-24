@@ -1,4 +1,4 @@
-package com.klishgroup.model.targetting;
+package com.klishgroup.targetting;
 
 import com.psddev.dari.db.Record;
 import com.psddev.dari.db.Recordable;

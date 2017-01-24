@@ -9,6 +9,7 @@ import com.klishgroup.view.component.InsightsAndEventsView;
 import com.psddev.dari.db.Query;
 import com.psddev.dari.util.ObjectUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -37,7 +38,11 @@ public class InsightsAndEventsViewModel extends AbstractViewModel<InsightsAndEve
         List<InsightOrEvent> items = Query.from(InsightOrEvent.class).sortDescending("cms.content.publishDate").selectAll();
 
         if (ObjectUtils.isBlank(items)) {
-            return null;
+            if (ObjectUtils.isBlank(model.getDefaultInsightOrEvent())) {
+                return null;
+            }
+            items = new ArrayList<>();
+            items.add(model.getDefaultInsightOrEvent());
         }
         return new ConcatenatedView.Builder()
                 .addAllToItems(items.stream()

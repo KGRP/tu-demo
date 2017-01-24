@@ -84,7 +84,8 @@ public class BannerCarouselSlide extends Record {
     }
 
     public enum CTAButtonType {
-        ORANGE("btn btn tui-orange-btn shadow homePageBannerCTA"),
+        ORANGE("btn btn tui-orange-btn shadow"),
+        TALL_ORANGE("btn tui-orange-btn tui-orange-tall-btn shadow"),
         YELLOW("btn btn-primary shadow");
 
         private String css;

@@ -1,0 +1,40 @@
+{{#defineBlock "MainNavNode"}}
+    {{#defineBlockContainer}}
+        {{#defineBlockBody}}
+            <li role="presentation">
+                <a class="toggleMenu" href="#" data-target="{{id}}IdSubNav">{{title}}</a>
+                <div style="display: none" class="dtSubNav" id="{{id}}IdSubNav">
+                    <div class="container">
+                        {{#with links}}
+                            <ul class="subNav" id="{{id}}IdSubNavContent">
+                                {{#each links}}
+                                    <li>
+                                        <a href="{{this.href}}" target="">
+                                            {{this.body}}
+                                            <span style="visibility:hidden;">{{this.index}}</span></a>
+                                    </li>
+                                {{/each}}
+                            </ul>
+                            <ul class="subNavMoreInfo hidden-xs hidden-sm"
+                                id="{{id}}IdInfo">
+                                {{#each links}}
+                                    <li style="display:none"
+                                        id="{{this.id}}{{this.index}}SubNavMoreInfo">
+                                        <span class="subNavTitle">{{this.body}}</span>
+                                        <p>{{this.description}}</p>
+                                    </li>
+                                {{/each}}
+                            </ul>
+                        {{/with}}
+                        {{#each subNavs}}
+                            {{this}}
+                        {{/each}}
+                        {{#with content}}
+                            {{this}}
+                        {{/with}}
+                    </div>
+                </div>
+            </li>
+        {{/defineBlockBody}}
+    {{/defineBlockContainer}}
+{{/defineBlock}}
