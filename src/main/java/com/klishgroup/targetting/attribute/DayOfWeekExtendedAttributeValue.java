@@ -15,6 +15,10 @@ public class DayOfWeekExtendedAttributeValue extends ExtendedAttributeValue {
         return day.name();
     }
 
+    /**
+     * Rule Verbalization
+     * @return
+     */
     @Override
     public String getLabel() {
         String label = "";

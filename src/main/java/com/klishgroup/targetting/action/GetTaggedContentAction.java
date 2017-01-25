@@ -37,6 +37,10 @@ public class GetTaggedContentAction extends Action {
         this.value = value;
     }
 
+    /**
+     * Rule Verbalization
+     * @return
+     */
     @Override
     public String getLabel() {
 

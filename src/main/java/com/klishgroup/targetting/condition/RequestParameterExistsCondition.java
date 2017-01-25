@@ -23,6 +23,10 @@ public class RequestParameterExistsCondition extends Condition {
         return !StringUtils.isBlank(request.getParameter(getRequestParameterName()));
     }
 
+    /**
+     * Rule Verbalization
+     * @return
+     */
     @Override
     public String getLabel() {
 

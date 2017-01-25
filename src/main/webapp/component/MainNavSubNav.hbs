@@ -1,8 +1,8 @@
 {{#defineBlock "MainNavSubNav"}}
     {{#defineBlockContainer}}
         {{#defineBlockBody}}
-            <a class="spSubHead toggleMenu dtToggle" href="#" data-target="{{id}}IdSubNav">{{title}}</a>
-            <ul style="display: none" class="subNav" id="{{id}}IdSubNavContent">
+            <a class="spSubHead active toggleMenu dtToggle" href="#" data-target="{{id}}NavContent" id="{{id}}SpSubHead">{{title}}</a>
+            <ul style="display: none" class="subNav" id="{{id}}NavContent">
                 {{#each links}}
                     <li>
                         <a href="{{this.href}}" target="">
@@ -11,8 +11,7 @@
                     </li>
                 {{/each}}
             </ul>
-            <ul class="subNavMoreInfo hidden-xs hidden-sm"
-                id="{{id}}IdInfo">
+            <ul class="subNavMoreInfo hidden-xs hidden-sm" id="{{id}}Info">
                 {{#each links}}
                     <li style="display:none"
                         id="{{this.id}}{{this.index}}SubNavMoreInfo">

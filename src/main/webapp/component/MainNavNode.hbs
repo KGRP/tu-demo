@@ -2,12 +2,12 @@
     {{#defineBlockContainer}}
         {{#defineBlockBody}}
             <li role="presentation">
-                <a class="toggleMenu" href="#" data-target="{{id}}IdSubNav">{{title}}</a>
-                <div style="display: none" class="dtSubNav" id="{{id}}IdSubNav">
-                    <div class="container">
-                        {{#with links}}
-                            <ul class="subNav" id="{{id}}IdSubNavContent">
-                                {{#each links}}
+                {{#with links}}
+                    <a class="toggleMenu" href="#" data-target="{{../id}}IdSubNav">{{../title}}</a>
+                    <div style="display: none" class="dtSubNav" id="{{../id}}IdSubNav">
+                        <div class="container">
+                            <ul class="subNav" id="{{../id}}IdSubNavContent">
+                                {{#each this}}
                                     <li>
                                         <a href="{{this.href}}" target="">
                                             {{this.body}}
@@ -16,8 +16,8 @@
                                 {{/each}}
                             </ul>
                             <ul class="subNavMoreInfo hidden-xs hidden-sm"
-                                id="{{id}}IdInfo">
-                                {{#each links}}
+                                id="{{../id}}IdInfo">
+                                {{#each this}}
                                     <li style="display:none"
                                         id="{{this.id}}{{this.index}}SubNavMoreInfo">
                                         <span class="subNavTitle">{{this.body}}</span>
@@ -25,15 +25,27 @@
                                     </li>
                                 {{/each}}
                             </ul>
-                        {{/with}}
-                        {{#each subNavs}}
-                            {{this}}
-                        {{/each}}
-                        {{#with content}}
-                            {{this}}
-                        {{/with}}
+                        </div>
                     </div>
-                </div>
+                {{/with}}
+                {{#with subNavs}}
+                    <a class="hidden-xs hidden-sm toggleMenu" href="#" data-target="{{../id}}SubNav">{{../title}}</a>
+                    <div class="dtSubNav" id="{{../id}}SubNav" style="display: none">
+                        <div class="container">
+                            {{#each this}}
+                                {{this}}
+                            {{/each}}
+                        </div>
+                    </div>
+                {{/with}}
+                {{#with content}}
+                    <a class="toggleMenu" href="#" data-target="{{../id}}IdSubNav">{{../title}}</a>
+                    <div style="display: none" class="dtSubNav insightsWrapper" id="{{../id}}IdSubNav">
+                        <div id="{{id}}IdSubNavContent" class="container">
+                            {{this}}
+                        </div>
+                    </div>
+                {{/with}}
             </li>
         {{/defineBlockBody}}
     {{/defineBlockContainer}}

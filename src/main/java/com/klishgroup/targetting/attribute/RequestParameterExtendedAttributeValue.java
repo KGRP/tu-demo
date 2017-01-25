@@ -23,6 +23,10 @@ public class RequestParameterExtendedAttributeValue extends ExtendedAttributeVal
         return (StringUtils.isBlank(requestParameterName)) ? null : request.getParameter(requestParameterName);
     }
 
+    /**
+     * Rule Verbalization
+     * @return
+     */
     @Override
     public String getLabel() {
         String label = "";

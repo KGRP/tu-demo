@@ -1,0 +1,13 @@
+{{#defineBlock "HeaderInsightsAndEvents"}}
+    {{#defineBlockContainer}}
+        {{#defineBlockBody}}
+            <div class="insightTopContent">{{title}}</div>
+            <div class="insightsList clearfix">
+                {{content}}
+            </div>
+            <a class="allInsightLink" href="{{viewAll.href}}">{{viewAll.body}}
+                {{#with viewAll.icon}}<i class="{{this}}"></i>{{/with}}
+            </a>
+        {{/defineBlockBody}}
+    {{/defineBlockContainer}}
+{{/defineBlock}}

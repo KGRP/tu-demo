@@ -61,7 +61,7 @@
       "title": "",
       "id": "",
       "content": {
-        "_template": "/component/InsightsAndEvents",
+        "_template": "/component/HeaderInsightsAndEvents",
 
         "title": "Insights and events",
         "viewAll": {

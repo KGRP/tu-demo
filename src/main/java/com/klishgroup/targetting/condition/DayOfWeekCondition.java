@@ -24,6 +24,10 @@ public class DayOfWeekCondition extends Condition {
         return OffsetDateTime.now().getDayOfWeek().equals(day);
     }
 
+    /**
+     * Rule Verbalization
+     * @return
+     */
     @Override
     public String getLabel() {
         String label = "";
