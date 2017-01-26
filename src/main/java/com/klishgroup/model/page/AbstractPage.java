@@ -19,6 +19,7 @@ import java.util.List;
 
 @ViewBinding(value = PageViewModel.class, types = { PageFilter.PAGE_VIEW_TYPE })
 @Recordable.DisplayName("Page")
+@ToolUi.Main
 public class AbstractPage extends Content {
     @Required
     private String name;

@@ -1,19 +1,15 @@
 package com.klishgroup.model;
 
-import com.klishgroup.model.page.AbstractPage;
+import com.klishgroup.targetting.Targeted;
 import com.psddev.dari.db.Record;
-import com.psddev.dari.util.ObjectUtils;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class TitledPageList extends Record {
 
     @Required
     private String title;
+    @Embedded
     @Required
-    @Minimum(1)
-    private List<AbstractPage> pages;
+    private Targeted.MultipleContent pages;
 
     public String getTitle() {
         return title;
@@ -23,14 +19,11 @@ public class TitledPageList extends Record {
         this.title = title;
     }
 
-    public List<AbstractPage> getPages() {
-        if (ObjectUtils.isBlank(pages)) {
-            return new ArrayList<>();
-        }
+    public Targeted.MultipleContent getPages() {
         return pages;
     }
 
-    public void setPages(List<AbstractPage> pages) {
+    public void setPages(Targeted.MultipleContent pages) {
         this.pages = pages;
     }
 }

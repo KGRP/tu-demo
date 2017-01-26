@@ -1,4 +1,6 @@
 package com.klishgroup.model.page;
 
-public class ProductPage extends AbstractPage {
+import com.klishgroup.targetting.Taggable;
+
+public class ProductPage extends AbstractPage implements Taggable {
 }

@@ -1,6 +1,7 @@
 package com.klishgroup.viewmodel;
 
 import com.klishgroup.model.component.BusinessHeader;
+import com.klishgroup.model.page.AbstractPage;
 import com.klishgroup.model.page.IndustryPage;
 import com.klishgroup.view.base.util.LinkView;
 import com.klishgroup.view.component.BusinessHeaderMainNavView;
@@ -30,8 +31,10 @@ public class BusinessHeaderViewModel extends AbstractHeaderViewModel<BusinessHea
                         .map(subNav -> new MainNavSubNavView.Builder()
                                 .title(subNav.getTitle())
                                 .id(com.psddev.dari.util.StringUtils.toCamelCase(subNav.getTitle()))
-                                .addAllToLinks(subNav.getPages().stream()
+                                .addAllToLinks(subNav.getPages().getModules(getRequest()).stream()
                                         .filter(Objects::nonNull)
+                                        .filter(AbstractPage.class::isInstance)
+                                        .map(AbstractPage.class::cast)
                                         .map(page -> new LinkView.Builder()
                                                 .href(page.getPermalink())
                                                 .body(page.getName())

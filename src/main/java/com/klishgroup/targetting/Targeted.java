@@ -24,26 +24,26 @@ public abstract class Targeted extends Record {
 
     public abstract List<Record> getModules(HttpServletRequest request);
 
-    public static class SingleContent extends Targeted {
+    public static class SingleContent<M extends Record> extends Targeted {
         @Required
         @ToolUi.Note("Default Content")
-        private Record module;
+        private M module;
 
-        public Record getModule() {
+        public M getModule() {
             return module;
         }
 
-        public void setModule(Record module) {
+        public void setModule(M module) {
             this.module = module;
         }
 
         @Override
         public List<Record> getModules(HttpServletRequest request) {
-            return generateModuleList(request, module);
+            return generateModuleList(request, getModule());
         }
     }
 
-    public static class MultipleContent extends Targeted {
+    public static class MultipleContent<M extends Record> extends Targeted {
         @Required
         @ToolUi.Note("Default Content")
         @Minimum(1)
@@ -62,7 +62,7 @@ public abstract class Targeted extends Record {
 
         @Override
         public List<Record> getModules(HttpServletRequest request) {
-            return generateModuleList(request, modules);
+            return generateModuleList(request, getModules());
         }
     }
 

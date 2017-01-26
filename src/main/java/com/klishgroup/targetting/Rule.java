@@ -12,11 +12,9 @@ import java.util.List;
 public class Rule extends Record {
 
     @Required
-    @Embedded
     private Condition condition;
 
     @Required
-    @Embedded
     private Action action;
 
     public Condition getCondition() {
