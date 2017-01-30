@@ -4,8 +4,6 @@ import com.klishgroup.model.Resource;
 import com.klishgroup.model.component.AbstractHeader;
 import com.klishgroup.model.component.Footer;
 import com.klishgroup.model.component.Module;
-import com.klishgroup.model.component.RawContent;
-import com.klishgroup.targetting.Targeted;
 import com.klishgroup.viewmodel.PageViewModel;
 import com.psddev.cms.db.Content;
 import com.psddev.cms.db.PageFilter;
@@ -19,18 +17,17 @@ import java.util.List;
 
 @ViewBinding(value = PageViewModel.class, types = { PageFilter.PAGE_VIEW_TYPE })
 @Recordable.DisplayName("Page")
-@ToolUi.Main
+@Recordable.Abstract
 public class AbstractPage extends Content {
     @Required
     private String name;
 
-    @Required
-    @Embedded
-    private Targeted.SingleContent targetedHeader;
+    @ToolUi.Note("Overrides site wide Header")
+    private AbstractHeader header;
 
     private List<Module> modules;
 
-    @ToolUi.RichText
+    @ToolUi.Note("Overrides site wide Footer")
     private Footer footer;
 
     @ToolUi.Tab("Resources")
@@ -53,12 +50,12 @@ public class AbstractPage extends Content {
         this.name = name;
     }
 
-    public Targeted.SingleContent getTargetedHeader() {
-        return targetedHeader;
+    public AbstractHeader getHeader() {
+        return header;
     }
 
-    public void setTargetedHeader(Targeted.SingleContent targetedHeader) {
-        this.targetedHeader = targetedHeader;
+    public void setHeader(AbstractHeader header) {
+        this.header = header;
     }
 
     public List<Module> getModules() {

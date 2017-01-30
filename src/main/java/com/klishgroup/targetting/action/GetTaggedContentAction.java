@@ -49,12 +49,14 @@ public class GetTaggedContentAction extends Action {
             label += "Get the content tagged by " + getAttribute().getLabel();
         }
 
+        /*
         if (getValue() != null) {
             if (!StringUtils.isBlank(label)) {
                 label += " where ";
             }
             label += getAttribute().getLabel() + " equals " + getValue().getLabel();
         }
+        */
         return label;
     }
 

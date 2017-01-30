@@ -1,0 +1,7 @@
+{{#defineBlock "FaviconIcon"}}
+    {{#defineBlockContainer}}
+        {{#defineBlockBody}}
+            <link href="{{href}}" type="{{#with type}}{{this}}{{else}}image/x-icon{{/with}}" rel="shortcut icon">
+        {{/defineBlockBody}}
+    {{/defineBlockContainer}}
+{{/defineBlock}}

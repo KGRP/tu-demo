@@ -6,8 +6,11 @@ import com.klishgroup.model.Link;
 import com.klishgroup.targetting.Taggable;
 import com.klishgroup.viewmodel.AbstractHeaderViewModel;
 import com.klishgroup.viewmodel.AbstractViewModel;
+import com.psddev.cms.db.Content;
 import com.psddev.cms.db.ToolUi;
 import com.psddev.cms.view.ViewBinding;
+import com.psddev.dari.db.Record;
+import com.psddev.dari.db.Recordable;
 import com.psddev.dari.util.ObjectUtils;
 import com.psddev.dari.util.StorageItem;
 
@@ -15,7 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @ViewBinding(value = AbstractHeaderViewModel.class, types = { AbstractViewModel.MODULE_VIEW_TYPE })
-public abstract class AbstractHeader extends Module implements Taggable {
+@Recordable.Abstract
+public abstract class AbstractHeader extends Content implements Taggable {
 
     @Required
     @ToolUi.Note("CMS Only")

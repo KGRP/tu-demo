@@ -15,6 +15,11 @@
             "content": "width=device-width, initial-scale=1"
         },
         {
+            "_template": "/base/page/Meta",
+            "property": "og-description",
+            "content": ""
+        },
+        {
             "_template": "/base/page/ExternalStylesheet",
             "href": "{{stylesheet}}",
             "rel": "stylesheet"
@@ -30,6 +35,11 @@
         {
             "_template": "/base/page/InlineStylesheet",
             "css": "{{words(50)}}"
+        },
+        {
+            "_template": "/common/FaviconIcon",
+            "href": "/favicon.ico",
+            "type": "image/x-icon"
         },
         {
             "_template": "/base/util/RawHtml",

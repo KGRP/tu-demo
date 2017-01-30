@@ -3,6 +3,7 @@ package com.klishgroup.model.component;
 import com.klishgroup.model.Link;
 import com.klishgroup.viewmodel.AbstractViewModel;
 import com.klishgroup.viewmodel.FooterViewModel;
+import com.psddev.cms.db.Content;
 import com.psddev.cms.db.ToolUi;
 import com.psddev.cms.view.ViewBinding;
 import com.psddev.dari.db.Record;
@@ -12,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @ViewBinding(value = FooterViewModel.class, types = { AbstractViewModel.MODULE_VIEW_TYPE })
-public class Footer extends Module {
+public class Footer extends Content {
 
     @Required
     @ToolUi.Note("CMS Only")

@@ -11,20 +11,9 @@ import java.util.List;
 
 public abstract class RenderingMode extends Record {
 
-    public abstract List<Record> generateModuleList(HttpServletRequest request, List<Record> modules);
+    public abstract List<Record> generateModuleList(HttpServletRequest request, List<Record> modules, ObjectType contentType);
 
     public static class DynamicRendering extends RenderingMode {
-
-        @Required
-        private ObjectType contentType;
-
-        public ObjectType getContentType() {
-            return contentType;
-        }
-
-        public void setContentType(ObjectType contentType) {
-            this.contentType = contentType;
-        }
 
         @Required
         @Minimum(1)
@@ -42,11 +31,11 @@ public abstract class RenderingMode extends Record {
         }
 
         @Override
-        public List<Record> generateModuleList(HttpServletRequest request, List<Record> modules) {
+        public List<Record> generateModuleList(HttpServletRequest request, List<Record> modules, ObjectType contentType) {
 
             List<Record> dynamicModules = new ArrayList<>();
             for (Rule rule : getRules()) {
-                dynamicModules = rule.execute(request, getContentType());
+                dynamicModules = rule.execute(request, contentType);
 
                 if (!ObjectUtils.isBlank(dynamicModules)) {
                     break;
@@ -59,7 +48,7 @@ public abstract class RenderingMode extends Record {
     public static class StaticRendering extends RenderingMode {
 
         @Override
-        public List<Record> generateModuleList(HttpServletRequest request, List<Record> modules) {
+        public List<Record> generateModuleList(HttpServletRequest request, List<Record> modules, ObjectType contentType) {
             return modules;
         }
     }

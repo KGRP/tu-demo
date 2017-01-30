@@ -24,9 +24,9 @@ public class BusinessHeaderViewModel extends AbstractHeaderViewModel<BusinessHea
         BusinessHeaderMainNavView.Builder mainNav = new BusinessHeaderMainNavView.Builder();
 
         mainNav.solutionsAndProducts(new MainNavNodeView.Builder()
-                .title(model.getSollutionsAndProducts().getLabel())
-                .id(com.psddev.dari.util.StringUtils.toCamelCase(model.getSollutionsAndProducts().getLabel()))
-                .addAllToSubNavs(model.getSollutionsAndProducts().getSubNavs().stream()
+                .title(model.getSolutionsAndProducts().getLabel())
+                .id(com.psddev.dari.util.StringUtils.toCamelCase(model.getSolutionsAndProducts().getLabel()))
+                .addAllToSubNavs(model.getSolutionsAndProducts().getSubNavs().stream()
                         .filter(Objects::nonNull)
                         .map(subNav -> new MainNavSubNavView.Builder()
                                 .title(subNav.getTitle())

@@ -15,7 +15,7 @@ import java.util.List;
 public class BusinessHeader extends AbstractHeader {
 
     @Required
-    private SolutionsAndProductsList sollutionsAndProducts;
+    private SolutionsAndProductsList solutionsAndProducts;
 
     @Required
     private IndustriesList industries;
@@ -23,12 +23,12 @@ public class BusinessHeader extends AbstractHeader {
     @Required
     private InsightsAndEventsList insightsAndEvents;
 
-    public SolutionsAndProductsList getSollutionsAndProducts() {
-        return sollutionsAndProducts;
+    public SolutionsAndProductsList getSolutionsAndProducts() {
+        return solutionsAndProducts;
     }
 
-    public void setSollutionsAndProducts(SolutionsAndProductsList sollutionsAndProducts) {
-        this.sollutionsAndProducts = sollutionsAndProducts;
+    public void setSolutionsAndProducts(SolutionsAndProductsList solutionsAndProducts) {
+        this.solutionsAndProducts = solutionsAndProducts;
     }
 
     public IndustriesList getIndustries() {

@@ -1,4 +1,7 @@
 package com.klishgroup.model.page;
 
-public class IndustryPage extends AbstractPage {
+import com.psddev.cms.db.ToolUi;
+
+@ToolUi.Main
+public class IndustryPage extends BusinessPage {
 }
