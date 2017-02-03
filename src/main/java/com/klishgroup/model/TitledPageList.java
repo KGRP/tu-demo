@@ -1,15 +1,21 @@
 package com.klishgroup.model;
 
-import com.klishgroup.targetting.Targeted;
+import com.klishgroup.model.page.BusinessPage;
+import com.psddev.cms.db.ToolUi;
 import com.psddev.dari.db.Record;
+import com.psddev.dari.util.ObjectUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class TitledPageList extends Record {
 
     @Required
     private String title;
-    @Embedded
+
+    @ToolUi.DropDown
     @Required
-    private Targeted.MultipleContent pages;
+    private List<BusinessPage> pages;
 
     public String getTitle() {
         return title;
@@ -19,11 +25,14 @@ public class TitledPageList extends Record {
         this.title = title;
     }
 
-    public Targeted.MultipleContent getPages() {
+    public List<BusinessPage> getPages() {
+        if (ObjectUtils.isBlank(pages)) {
+            return new ArrayList<>();
+        }
         return pages;
     }
 
-    public void setPages(Targeted.MultipleContent pages) {
+    public void setPages(List<BusinessPage> pages) {
         this.pages = pages;
     }
 }

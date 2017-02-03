@@ -15,12 +15,15 @@ import java.util.List;
 public class BusinessHeader extends AbstractHeader {
 
     @Required
+    @Embedded
     private SolutionsAndProductsList solutionsAndProducts;
 
     @Required
+    @Embedded
     private IndustriesList industries;
 
     @Required
+    @Embedded
     private InsightsAndEventsList insightsAndEvents;
 
     public SolutionsAndProductsList getSolutionsAndProducts() {

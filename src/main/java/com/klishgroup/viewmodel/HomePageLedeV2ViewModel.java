@@ -1,12 +1,14 @@
 package com.klishgroup.viewmodel;
 
-import com.klishgroup.model.component.HomePageLede;
+import com.klishgroup.model.Image;
+import com.klishgroup.model.component.HomePageLedeV2;
 import com.klishgroup.view.base.util.LinkView;
 import com.klishgroup.view.base.util.RawHtmlView;
 import com.klishgroup.view.component.HomePageLedeView;
+import com.psddev.dari.db.Record;
 import com.psddev.dari.util.ObjectUtils;
 
-public class HomePageLedeViewModel extends AbstractViewModel<HomePageLede> implements HomePageLedeView {
+public class HomePageLedeV2ViewModel extends AbstractViewModel<HomePageLedeV2> implements HomePageLedeView {
 
     @Override
     public Object getAlreadyMemberLink() {
@@ -44,7 +46,9 @@ public class HomePageLedeViewModel extends AbstractViewModel<HomePageLede> imple
         if (ObjectUtils.isBlank(model.getImage())) {
             return null;
         }
-        return model.getImage().getFile().getPublicUrl();
+        Record imageRecord = model.getImage().getTargetedModule(getRequest());
+        return (!ObjectUtils.isBlank(imageRecord))
+                ? ObjectUtils.to(Image.class, imageRecord).getFile().getPublicUrl() : null;
     }
 
     @Override
@@ -52,6 +56,8 @@ public class HomePageLedeViewModel extends AbstractViewModel<HomePageLede> imple
         if (ObjectUtils.isBlank(model.getImageMobile())) {
             return null;
         }
-        return model.getImageMobile().getFile().getPublicUrl();
+        Record imageRecord = model.getImageMobile().getTargetedModule(getRequest());
+        return (!ObjectUtils.isBlank(imageRecord))
+                ? ObjectUtils.to(Image.class, imageRecord).getFile().getPublicUrl() : null;
     }
 }

@@ -1,6 +1,6 @@
 package com.klishgroup.model.component;
 
-import com.psddev.cms.db.Content;
+import com.psddev.dari.db.Recordable;
 
-public abstract class Module extends Content {
+public interface Module extends Recordable {
 }

@@ -1,23 +1,22 @@
 package com.klishgroup.model.component;
 
-import com.klishgroup.model.Image;
 import com.klishgroup.model.Link;
+import com.klishgroup.targeted.TargetedImage;
 import com.klishgroup.viewmodel.AbstractViewModel;
-import com.klishgroup.viewmodel.HomePageLedeViewModel;
+import com.klishgroup.viewmodel.HomePageLedeV2ViewModel;
 import com.psddev.cms.db.Content;
 import com.psddev.cms.db.ToolUi;
 import com.psddev.cms.view.ViewBinding;
-import com.psddev.dari.util.StorageItem;
 
-@ViewBinding(value = HomePageLedeViewModel.class, types = { AbstractViewModel.MODULE_VIEW_TYPE })
-public class HomePageLede extends Content implements Module {
+@ViewBinding(value = HomePageLedeV2ViewModel.class, types = { AbstractViewModel.MODULE_VIEW_TYPE })
+public class HomePageLedeV2 extends Content implements Module {
 
     @Required
     @ToolUi.Note("CMS Only")
     private String name;
 
+    @ToolUi.RichText
     @Required
-    @ToolUi.RichText(inline = false)
     private String headline1;
 
     @Required
@@ -32,9 +31,9 @@ public class HomePageLede extends Content implements Module {
     @ToolUi.RichText
     private String alreadyMemberLink;
 
-    private Image image;
+    private TargetedImage image;
 
-    private Image imageMobile;
+    private TargetedImage imageMobile;
 
     public String getName() {
         return name;
@@ -84,19 +83,19 @@ public class HomePageLede extends Content implements Module {
         this.alreadyMemberLink = alreadyMemberLink;
     }
 
-    public Image getImage() {
+    public TargetedImage getImage() {
         return image;
     }
 
-    public void setImage(Image image) {
+    public void setImage(TargetedImage image) {
         this.image = image;
     }
 
-    public Image getImageMobile() {
+    public TargetedImage getImageMobile() {
         return imageMobile;
     }
 
-    public void setImageMobile(Image imageMobile) {
+    public void setImageMobile(TargetedImage imageMobile) {
         this.imageMobile = imageMobile;
     }
 }

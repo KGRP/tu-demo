@@ -9,6 +9,7 @@ import com.klishgroup.model.component.Footer;
 import com.klishgroup.model.page.AbstractPage;
 import com.klishgroup.model.page.BusinessPage;
 import com.klishgroup.model.page.ConsumerPage;
+import com.klishgroup.targetting.Targeted;
 import com.klishgroup.view.base.page.ExternalScriptView;
 import com.klishgroup.view.base.page.ExternalStylesheetView;
 import com.klishgroup.view.base.page.HeadView;
@@ -132,7 +133,6 @@ public class PageViewModel extends AbstractViewModel<AbstractPage> implements Pa
     public Object getBody() {
         ConcatenatedView.Builder pageLayoutView = new ConcatenatedView.Builder();
 
-
         AbstractPage page = model;
 
         pageLayoutView.addToItems(createHeaderView(model));
@@ -140,7 +140,14 @@ public class PageViewModel extends AbstractViewModel<AbstractPage> implements Pa
         page.getModules()
                 .stream()
                 .filter(Objects::nonNull)
-                .forEach(module -> pageLayoutView.addToItems(createView(AbstractViewModel.MODULE_VIEW_TYPE, module)));
+                .forEach(module -> {
+                            if (module instanceof Targeted.SingleContent) {
+                                pageLayoutView.addToItems(createView(AbstractViewModel.MODULE_VIEW_TYPE,
+                                        ((Targeted.SingleContent) module).getTargetedModule(getRequest())));
+                            } else {
+                                pageLayoutView.addToItems(createView(AbstractViewModel.MODULE_VIEW_TYPE, module));
+                            }
+                        });
 
         pageLayoutView.addToItems(createFooterView(model));
 

@@ -1,10 +1,11 @@
 package com.klishgroup.model;
 
+import com.klishgroup.targetting.Taggable;
 import com.psddev.cms.db.Content;
 import com.psddev.dari.util.StorageItem;
 
 @Content.PreviewField("file")
-public class Image extends Content {
+public class Image extends Content implements Taggable {
 
     @Required
     private String name;

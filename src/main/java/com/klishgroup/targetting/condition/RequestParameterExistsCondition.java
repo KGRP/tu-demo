@@ -32,7 +32,8 @@ public class RequestParameterExistsCondition extends Condition {
 
         String label = "";
         if (getRequestParameterName() != null) {
-            label += "Request Parameter " + getRequestParameterName() + " exists?";
+           // label += "Request Parameter " + getRequestParameterName() + " exists?";
+            label += getRequestParameterName() + " exists?";
         }
         return label;
     }

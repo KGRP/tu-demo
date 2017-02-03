@@ -4,11 +4,12 @@ import com.klishgroup.model.InsightOrEvent;
 import com.klishgroup.model.Link;
 import com.klishgroup.viewmodel.AbstractViewModel;
 import com.klishgroup.viewmodel.InsightsAndEventsViewModel;
+import com.psddev.cms.db.Content;
 import com.psddev.cms.db.ToolUi;
 import com.psddev.cms.view.ViewBinding;
 
 @ViewBinding(value = InsightsAndEventsViewModel.class, types = { AbstractViewModel.MODULE_VIEW_TYPE })
-public class InsightsAndEvents extends Module {
+public class InsightsAndEvents extends Content implements Module {
 
     @Required
     @ToolUi.Note("CMS Only")

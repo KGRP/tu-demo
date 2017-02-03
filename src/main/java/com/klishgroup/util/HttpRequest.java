@@ -10,9 +10,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/**
- * Populates a field with the value of the request URL from an HTTP request.
- */
 @ServletViewRequestAnnotationProcessorClass(HttpRequestProcessor.class)
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
