@@ -1,5 +1,6 @@
 package com.klishgroup.viewmodel;
 
+import com.klishgroup.model.TitledPageList;
 import com.klishgroup.model.component.BusinessHeader;
 import com.klishgroup.model.page.AbstractPage;
 import com.klishgroup.model.page.IndustryPage;
@@ -23,29 +24,44 @@ public class BusinessHeaderViewModel extends AbstractHeaderViewModel<BusinessHea
 
         BusinessHeaderMainNavView.Builder mainNav = new BusinessHeaderMainNavView.Builder();
 
-        mainNav.solutionsAndProducts(new MainNavNodeView.Builder()
-                .title(model.getSolutionsAndProducts().getLabel())
-                .id(com.psddev.dari.util.StringUtils.toCamelCase(model.getSolutionsAndProducts().getLabel()))
-                .addAllToSubNavs(model.getSolutionsAndProducts().getSubNavs().stream()
-                        .filter(Objects::nonNull)
-                        .map(subNav -> new MainNavSubNavView.Builder()
-                                .title(subNav.getTitle())
-                                .id(com.psddev.dari.util.StringUtils.toCamelCase(subNav.getTitle()))
-                                .addAllToLinks(subNav.getPages().stream()
-                                        .filter(Objects::nonNull)
-                                        .map(page -> new LinkView.Builder()
-                                                .href(page.getPermalink())
-                                                .body(page.getName())
-                                                .description(page.as(Seo.ObjectModification.class).getDescription())
-                                                .index(StringUtils.remove(StringUtils.capitalize(subNav.getTitle() + page.getId().toString()), " "))
-                                                .id(StringUtils.remove(StringUtils.capitalize(page.getName()), " "))
-                                                .build())
-                                        .filter(Objects::nonNull)
-                                        .collect(Collectors.toList()))
-                                .build())
-                        .filter(Objects::nonNull)
-                        .collect(Collectors.toList()))
-                .build());
+        BusinessHeader.SolutionsAndProductsList solutionsAndProductsList = model.getSolutionsAndProducts();
+
+        if (!ObjectUtils.isBlank(solutionsAndProductsList)) {
+
+            List<TitledPageList> subNavs = solutionsAndProductsList.getSubNavs();
+
+            if (!ObjectUtils.isBlank(subNavs) && subNavs.size() > 0) {
+
+                TitledPageList active = subNavs.get(0);
+
+                mainNav.solutionsAndProducts(new MainNavNodeView.Builder()
+                        .title(solutionsAndProductsList.getLabel())
+                        .id(com.psddev.dari.util.StringUtils.toCamelCase(solutionsAndProductsList.getLabel()))
+                        .addAllToSubNavs(model.getSolutionsAndProducts().getSubNavs().stream()
+                                .filter(Objects::nonNull)
+                                .map(subNav -> new MainNavSubNavView.Builder()
+                                        .title(subNav.getTitle())
+                                        .id(com.psddev.dari.util.StringUtils.toCamelCase(subNav.getTitle()))
+                                        .active((subNav.equals(active)))
+                                        .addAllToLinks(subNav.getPages().stream()
+                                                .filter(Objects::nonNull)
+                                                .map(page -> new LinkView.Builder()
+                                                        .href(page.getPermalink())
+                                                        .body(page.getName())
+                                                        .description(page.as(Seo.ObjectModification.class).getDescription())
+                                                        .index(StringUtils.remove(StringUtils.capitalize(subNav.getTitle() + page.getId().toString()), " "))
+                                                        .id(StringUtils.remove(StringUtils.capitalize(page.getName()), " "))
+                                                        .build())
+                                                .filter(Objects::nonNull)
+                                                .collect(Collectors.toList()))
+                                        .build())
+                                .filter(Objects::nonNull)
+                                .collect(Collectors.toList()))
+                        .build());
+            }
+        }
+
+
 
         List<IndustryPage> industries = Query.from(IndustryPage.class).selectAll();
         if (!ObjectUtils.isBlank(industries)) {

@@ -31,7 +31,7 @@ public class DemandBaseParameterExtendedAttributeValue extends ExtendedAttribute
     public String getLabel() {
         String label = "";
         if (demandBaseAttribute != null) {
-            label += "The value of " + demandBaseAttribute.getLabel();
+            label += demandBaseAttribute.getLabel();
         }
         return label;
     }

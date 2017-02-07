@@ -1,5 +1,6 @@
 package com.klishgroup.targetting;
 
+import com.psddev.cms.db.PageFilter;
 import com.psddev.dari.db.ObjectType;
 import com.psddev.dari.db.Record;
 import com.psddev.dari.util.ObjectUtils;
@@ -37,7 +38,8 @@ public class Rule extends Record {
 
         List<Record> modules = new ArrayList<>();
 
-        if (!ObjectUtils.isBlank(condition) && condition.matches(request)) {
+        if ((!ObjectUtils.isBlank(condition) && condition.matches(request))
+                || PageFilter.Static.isPreview(request)) {
             modules =  action.execute(request, contentType);
         }
         return (!ObjectUtils.isBlank(modules)) ? modules : new ArrayList<>();

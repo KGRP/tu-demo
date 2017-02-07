@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Recordable.LabelFields("name")
+@Deprecated
 public abstract class Targeted extends Record {
 
     @Required

@@ -56,14 +56,15 @@ public class GetTaggedContentAction extends Action {
 
         ExtendedAttributeValue value = getValue();
 
-        if (ObjectUtils.isBlank(value) || ObjectUtils.isBlank(value.getAttributeValue(request))) {
+        if (ObjectUtils.isBlank(value) || ObjectUtils.isBlank(value.getOriginalOrSimulatedAttributeValue(request))) {
             return null;
         }
 
         String taggableAttribute = ObjectType.getInstance(Taggable.class).getInternalName() + "/tg.tags/attribute";
         String taggableValues = ObjectType.getInstance(Taggable.class).getInternalName() + "/tg.tags/values";
+        String tagValue = value.getOriginalOrSimulatedAttributeValue(request);
 
         return Query.from(Record.class).where("_type = ? and " + taggableAttribute + " = ? and " + taggableValues + " = ?",
-                objectType, getAttribute(), getValue().getAttributeValue(request)).sortDescending("cms.content.publishDate").selectAll();
+                objectType, getAttribute(), tagValue).sortDescending("cms.content.publishDate").selectAll();
     }
 }

@@ -1,7 +1,7 @@
 {{#defineBlock "MainNavSubNav"}}
     {{#defineBlockContainer}}
         {{#defineBlockBody}}
-            <a class="spSubHead active toggleMenu dtToggle" href="#" data-target="{{id}}NavContent" id="{{id}}SpSubHead">{{title}}</a>
+            <a class="spSubHead {{#if active}}active{{/if}} toggleMenu dtToggle" href="#" data-target="{{id}}NavContent" id="{{id}}SpSubHead">{{title}}</a>
             <ul style="display: none" class="subNav" id="{{id}}NavContent">
                 {{#each links}}
                     <li>

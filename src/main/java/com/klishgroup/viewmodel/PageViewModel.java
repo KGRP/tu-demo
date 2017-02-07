@@ -10,6 +10,7 @@ import com.klishgroup.model.page.AbstractPage;
 import com.klishgroup.model.page.BusinessPage;
 import com.klishgroup.model.page.ConsumerPage;
 import com.klishgroup.targetting.Targeted;
+import com.klishgroup.targetting.TargetedInterface;
 import com.klishgroup.view.base.page.ExternalScriptView;
 import com.klishgroup.view.base.page.ExternalStylesheetView;
 import com.klishgroup.view.base.page.HeadView;
@@ -118,10 +119,10 @@ public class PageViewModel extends AbstractViewModel<AbstractPage> implements Pa
 
                 itemsList.addAll(createCssResourceView(getSite().as(SiteSettings.class).getHeadResources()));
                 itemsList.add(createFaviconIcon(getSite().as(SiteSettings.class).getFaviconIcon()));
-                itemsList.addAll(createCssResourceView(((AbstractPage) model).getHeadResources()));
+                itemsList.addAll(createCssResourceView(model.getHeadResources()));
 
                 itemsList.addAll(createJsResourceView(getSite().as(SiteSettings.class).getHeadResources()));
-                itemsList.addAll(createJsResourceView(((AbstractPage) model).getHeadResources()));
+                itemsList.addAll(createJsResourceView(model.getHeadResources()));
 
                 return itemsList;
             }
@@ -141,13 +142,16 @@ public class PageViewModel extends AbstractViewModel<AbstractPage> implements Pa
                 .stream()
                 .filter(Objects::nonNull)
                 .forEach(module -> {
-                            if (module instanceof Targeted.SingleContent) {
-                                pageLayoutView.addToItems(createView(AbstractViewModel.MODULE_VIEW_TYPE,
-                                        ((Targeted.SingleContent) module).getTargetedModule(getRequest())));
-                            } else {
-                                pageLayoutView.addToItems(createView(AbstractViewModel.MODULE_VIEW_TYPE, module));
-                            }
-                        });
+                    if (module instanceof Targeted.SingleContent) {
+                        pageLayoutView.addToItems(createView(AbstractViewModel.MODULE_VIEW_TYPE,
+                                ((Targeted.SingleContent) module).getTargetedModule(getRequest())));
+                    } else if (module instanceof TargetedInterface.SingleContent) {
+                        pageLayoutView.addToItems(createView(AbstractViewModel.MODULE_VIEW_TYPE,
+                                ((TargetedInterface.SingleContent) module).getTargetedModule(getRequest())));
+                    } else {
+                        pageLayoutView.addToItems(createView(AbstractViewModel.MODULE_VIEW_TYPE, module));
+                    }
+                });
 
         pageLayoutView.addToItems(createFooterView(model));
 

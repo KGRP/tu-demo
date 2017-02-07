@@ -31,7 +31,7 @@ public class RequestParameterExtendedAttributeValue extends ExtendedAttributeVal
     public String getLabel() {
         String label = "";
         if (requestParameterName != null) {
-            label += "The value generated using request parameter " + requestParameterName;
+            label += requestParameterName;
         }
         return label;
     }

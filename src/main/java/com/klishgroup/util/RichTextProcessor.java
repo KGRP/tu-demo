@@ -167,7 +167,6 @@ public final class RichTextProcessor {
     private static String getRteTagsDomSelector() {
 
         Map<String, ObjectType> rteTagTypes = getRteTagTypes();
-        LOGGER.info(ObjectUtils.toJson(rteTagTypes));
 
         String selector = rteTagTypes.keySet()
                 .stream()

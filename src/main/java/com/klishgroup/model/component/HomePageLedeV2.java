@@ -1,7 +1,7 @@
 package com.klishgroup.model.component;
 
 import com.klishgroup.model.Link;
-import com.klishgroup.targeted.TargetedImage;
+import com.klishgroup.targetting.model.TargetedImage;
 import com.klishgroup.viewmodel.AbstractViewModel;
 import com.klishgroup.viewmodel.HomePageLedeV2ViewModel;
 import com.psddev.cms.db.Content;

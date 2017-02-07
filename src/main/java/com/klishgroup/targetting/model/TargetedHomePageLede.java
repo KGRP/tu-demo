@@ -1,13 +1,13 @@
-package com.klishgroup.targeted;
+package com.klishgroup.targetting.model;
 
 import com.klishgroup.model.component.HomePageLede;
 import com.klishgroup.model.component.Module;
 import com.klishgroup.targetting.Targeted;
+import com.klishgroup.targetting.TargetedInterface;
 import com.psddev.dari.db.Record;
 import com.psddev.dari.db.Recordable;
 
-@Recordable.Embedded
-public class TargetedHomePageLede extends Targeted.SingleContent implements Module {
+public class TargetedHomePageLede extends Record implements TargetedInterface.SingleContent, Module {
 
     @Required
     private HomePageLede defaultHomepageLede;

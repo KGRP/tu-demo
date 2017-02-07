@@ -1,12 +1,12 @@
-package com.klishgroup.targeted;
+package com.klishgroup.targetting.model;
 
 import com.klishgroup.model.component.BusinessHeader;
 import com.klishgroup.targetting.Targeted;
+import com.klishgroup.targetting.TargetedInterface;
 import com.psddev.dari.db.Record;
 import com.psddev.dari.db.Recordable;
 
-@Recordable.Embedded
-public class TargetedBusinessHeader extends Targeted.SingleContent {
+public class TargetedBusinessHeader extends Record implements TargetedInterface.SingleContent {
 
     @Required
     private BusinessHeader defaultBusinessHeader;
@@ -19,6 +19,7 @@ public class TargetedBusinessHeader extends Targeted.SingleContent {
         this.defaultBusinessHeader = defaultBusinessHeader;
     }
 
+    @Indexed
     @Override
     public Record getDefaultModule() {
         return getDefaultBusinessHeader();

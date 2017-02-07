@@ -636,7 +636,7 @@ if (!isValueExternal) {
                 String weightFieldName = weightedTypesAndFieldsMap.get(itemType);
 
                 if (!StringUtils.isBlank(weightFieldName)) {
-                    Double weight = ObjectUtils.to(Double.class, itemState.get(weightFieldName));
+                    Double weight = ObjectUtils.toOrError(Double.class, itemState.get(weightFieldName));
                     Double total = weightedTypesAndTotalsMap.get(itemType);
                     weightedTypesAndTotalsMap.put(itemType, (total != null ? total : 0.0) + weight);
                 }

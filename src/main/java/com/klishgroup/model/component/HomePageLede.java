@@ -2,6 +2,7 @@ package com.klishgroup.model.component;
 
 import com.klishgroup.model.Image;
 import com.klishgroup.model.Link;
+import com.klishgroup.targetting.Taggable;
 import com.klishgroup.viewmodel.AbstractViewModel;
 import com.klishgroup.viewmodel.HomePageLedeViewModel;
 import com.psddev.cms.db.Content;
@@ -10,7 +11,7 @@ import com.psddev.cms.view.ViewBinding;
 import com.psddev.dari.util.StorageItem;
 
 @ViewBinding(value = HomePageLedeViewModel.class, types = { AbstractViewModel.MODULE_VIEW_TYPE })
-public class HomePageLede extends Content implements Module {
+public class HomePageLede extends Content implements Module, Taggable {
 
     @Required
     @ToolUi.Note("CMS Only")

@@ -12,6 +12,7 @@
           "_template": "/component/MainNavSubNav",
           "title": "",
           "id": "",
+          "active": true,
           "links": [
             {
               "_template": "/base/util/Link",

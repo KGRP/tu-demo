@@ -2,6 +2,9 @@
 
 com.psddev.cms.db.Content,
 com.psddev.cms.db.ContentLock,
+com.psddev.cms.db.Copyable,
+com.psddev.cms.db.Overlay,
+com.psddev.cms.db.OverlayProvider,
 com.psddev.cms.db.Directory,
 com.psddev.cms.db.Draft,
 com.psddev.cms.db.Guide,
@@ -20,12 +23,13 @@ com.psddev.cms.db.Workflow,
 com.psddev.cms.db.WorkflowLog,
 com.psddev.cms.db.WorkflowState,
 com.psddev.cms.db.WorkflowTransition,
+com.psddev.cms.db.WorkInProgress,
 com.psddev.cms.db.WorkStream,
 com.psddev.cms.tool.CmsTool,
 com.psddev.cms.tool.ContentEditWidgetDisplay,
 com.psddev.cms.tool.ToolPageContext,
 com.psddev.cms.tool.Widget,
-com.psddev.dari.util.Settings,
+com.psddev.cms.tool.page.content.Edit,
 
 com.psddev.dari.db.ObjectField,
 com.psddev.dari.db.ObjectType,
@@ -35,8 +39,11 @@ com.psddev.dari.db.State,
 com.psddev.dari.util.HtmlWriter,
 com.psddev.dari.util.JspUtils,
 com.psddev.dari.util.ObjectUtils,
+com.psddev.dari.util.Settings,
 com.psddev.dari.util.StringUtils,
 com.psddev.cms.tool.ContentEditable,
+
+com.klishgroup.targetting.util.PreviewUtils,
 
 java.io.StringWriter,
 java.util.ArrayList,
@@ -160,6 +167,48 @@ if (workStream != null) {
     State.getInstance(workstreamObject).as(WorkStream.Data.class).complete(workStream, wp.getUser());
 }
 
+// Only permit copy if the copy source object is accessible to the current Site
+Object copy = Query.findById(Object.class, wp.uuidParam("copyId"));
+if (copy != null) {
+
+    if (site != null && !Site.Static.isObjectAccessible(site, copy)) {
+        wp.writeHeader();
+        wp.writeStart("div", "class", "message message-warning");
+        wp.writeHtml(wp.localize(
+                "com.psddev.cms.tool.page.content.Edit",
+                ImmutableMap.of(
+                        "typeLabel", wp.getTypeLabel(copy),
+                        "objectLabel", wp.getObjectLabel(copy),
+                        "siteName", site.getName()
+                ),
+                "message.notAccessible"));
+        wp.writeEnd();
+        wp.writeFooter();
+        return;
+    }
+}
+
+State editingState = State.getInstance(editing);
+
+// When a copy is specified as part of a POST, overlay the editingState on top of
+// the copyState to retain non-displaying State values from the original copy.
+if (wp.isFormPost() && copy != null && editingState.isNew()) {
+
+    State copyState = State.getInstance(Copyable.copy(copy));
+
+    if (site != null
+            && !Settings.get(boolean.class, "cms/tool/copiedObjectInheritsSourceObjectsSiteOwner")) {
+        // Only set the owner to current site if not on global and no setting to dictate otherwise.
+        copyState.as(Site.ObjectModification.class).setOwner(site);
+    }
+
+    copyState.setId(editingState.getId());
+    copyState.setStatus(editingState.getStatus());
+    state = copyState;
+    editing = state.getOriginalObject();
+    selected = editing;
+}
+
 if (wp.tryDelete(editing) ||
         wp.tryNewDraft(editing) ||
         wp.tryDraft(editing) ||
@@ -172,27 +221,26 @@ if (wp.tryDelete(editing) ||
     return;
 }
 
-Object copy = Query.findById(Object.class, wp.uuidParam("copyId"));
-if (copy != null) {
-    State editingState = State.getInstance(editing);
-    editingState.setValues(State.getInstance(copy).getSimpleValues());
-    editingState.setId(null);
-    editingState.as(Directory.ObjectModification.class).clearPaths();
-    for (Site consumer : editingState.as(Site.ObjectModification.class).getConsumers()) {
-        editingState.as(Directory.ObjectModification.class).clearSitePaths(consumer);
-    }
-    if (site != null && 
-            !Settings.get(boolean.class, "cms/tool/copiedObjectInheritsSourceObjectsSiteOwner")) {
+// Only copy on a GET request to the page.  Subsequent POSTs should not overwrite
+// the editing state with the copy source state again.
+if (!wp.isFormPost() && copy != null && editingState.isNew()) {
+
+    state = State.getInstance(Copyable.copy(copy));
+
+    if (site != null
+            && !Settings.get(boolean.class, "cms/tool/copiedObjectInheritsSourceObjectsSiteOwner")) {
         // Only set the owner to current site if not on global and no setting to dictate otherwise.
-        editingState.as(Site.ObjectModification.class).setOwner(site);
-    }    
+        state.as(Site.ObjectModification.class).setOwner(site);
+    }
+
+    editing = state.getOriginalObject();
+    selected = editing;
 }
 
 // Directory directory = Query.findById(Directory.class, wp.uuidParam("directoryId"));
 History history = wp.getOverlaidHistory(editing);
 Draft draft = wp.getOverlaidDraft(editing);
 Set<ObjectType> compatibleTypes = ToolUi.getCompatibleTypes(State.getInstance(editing).getType());
-State editingState = State.getInstance(editing);
 ToolUser user = wp.getUser();
 ContentLock contentLock = null;
 boolean lockedOut = false;
@@ -230,17 +278,26 @@ if (oldObject != null) {
 <%
 wp.writeHeader(editingState.getType() != null ? editingState.getType().getLabel() : null);
 %>
-<div class="content-edit">
+<div class="content-edit"<%= wp.getCmsTool().isHorizontalSearchCarousel() ? "" : " data-vertical-carousel" %>>
 <%
 
     String search = wp.param(String.class, "search");
 
     if (search != null) {
         wp.writeStart("div", "class", "frame");
-            wp.writeStart("a", "href", wp.cmsUrl("/searchCarousel", "id", editingState.getId(), "search", search));
+            wp.writeStart("a",
+                    "href", wp.cmsUrl("/searchCarousel",
+                            "id", editingState.getId(),
+                            "search", search,
+                            "draftId", wp.param(UUID.class, "draftId")));
             wp.writeEnd();
         wp.writeEnd();
     }
+
+    Overlay overlay = Edit.getOverlay(editing);
+    OverlayProvider overlayProvider = overlay != null ? overlay.getOverlayProvider() : null;
+
+    Edit.writeOverlayProviderSelect(wp, editing, overlayProvider);
 %>
     <form class="contentForm contentLock"
             method="post"
@@ -254,14 +311,17 @@ wp.writeHeader(editingState.getType() != null ? editingState.getType().getLabel(
                     "action-trash", null,
                     "published", null) %>"
             autocomplete="off"
+            <% if (!wp.getCmsTool().isDisableFieldLocking()) { %>
             data-rtc-content-id="<%= draft != null ? draft.getId() : editingState.getId() %>"
+            <% } %>
             data-new="<%= State.getInstance(editing).isNew() %>"
             data-o-id="<%= State.getInstance(selected).getId() %>"
             data-o-label="<%= wp.h(State.getInstance(selected).getLabel()) %>"
             data-o-preview="<%= wp.h(wp.getPreviewThumbnailUrl(selected)) %>"
             data-object-id="<%= State.getInstance(editing).getId() %>"
             data-content-locked-out="<%= lockedOut && !editAnyway %>"
-            data-content-id="<%= State.getInstance(editing).getId() %>">
+            data-content-id="<%= State.getInstance(editing).getId() %>"
+            <% if (overlay != null) { %>data-overlay-differences="<%= wp.h(ObjectUtils.toJson(overlay.getDifferences())) %>"<% } %>>
 
         <input type="hidden" name="<%= editingState.getId() %>/oldValues" value="<%= wp.h(ObjectUtils.toJson(editingOldValues)) %>">
 
@@ -270,6 +330,11 @@ wp.writeHeader(editingState.getType() != null ? editingState.getType().getLabel(
                 <h1 class="breadcrumbs"><%
 
                     wp.writeStart("span", "class", "breadcrumbItem icon icon-object");
+                        if (overlayProvider != null) {
+                            wp.writeTypeObjectLabel(overlayProvider);
+                            wp.writeHtml(" - ");
+                        }
+
                         if (state.isNew()) {
                             wp.writeHtml("New");
 
@@ -298,7 +363,7 @@ wp.writeHeader(editingState.getType() != null ? editingState.getType().getLabel(
 
                         wp.write(": " );
 
-                        wp.writeStart("span", "data-dynamic-html", "${toolPageContext.createObjectLabelHtml(content)}");
+                        wp.writeStart("span", "class", "ContentLabel", "data-dynamic-html", "${toolPageContext.createObjectLabelHtml(content)}");
                             wp.write(wp.createObjectLabelHtml(editing));
                         wp.writeEnd();
                     wp.writeEnd();
@@ -339,7 +404,8 @@ wp.writeHeader(editingState.getType() != null ? editingState.getType().getLabel(
                 </div>
 
                 <% if (!State.getInstance(editing).isNew() &&
-                        !(editing instanceof com.psddev.dari.db.Singleton)) { %>
+                        !(editing instanceof com.psddev.dari.db.Singleton)
+                        && !State.getInstance(editing).getType().as(ToolUi.class).isReadOnly()) { %>
                     <div class="widget-contentCreate">
                         <div class="action action-create">
                             <%= wp.h(wp.localize("com.psddev.cms.tool.page.content.Edit", "action.new"))%>
@@ -375,6 +441,8 @@ wp.writeHeader(editingState.getType() != null ? editingState.getType().getLabel(
 
                 <%
                 wp.include("/WEB-INF/objectMessage.jsp", "object", editing);
+
+                Edit.restoreWorkInProgress(wp, editing);
 
                 Object compareObject = null;
 
@@ -436,9 +504,7 @@ wp.writeHeader(editingState.getType() != null ? editingState.getType().getLabel(
 
                                 wp.writeStart("div", "class", "contentDiffCurrent " + (history != null ? "contentDiffRight" : "contentDiffLeft"));
                                     wp.writeStart("h2");
-                                        wp.writeHtml(wp.localize(
-                                                "com.psddev.cms.tool.page.content.Edit",
-                                                !visible ? "subtitle.initialDraft" : "subtitle.live"));
+                                        wp.writeHtml(wp.localize(editingState.getType(), "subtitle.current"));
                                     wp.writeEnd();
                                     wp.writeSomeFormFields(original.getOriginalObject(), true, null, null);
                                 wp.writeEnd();
@@ -471,8 +537,13 @@ wp.writeHeader(editingState.getType() != null ? editingState.getType().getLabel(
         </div>
 
         <div class="contentForm-aside">
-            <div class="widget widget-publishing">
-                <h1 class="icon icon-action-publish"><%= wp.h(wp.localize(editingState.getType(), "action.publish")) %></h1>
+            <%
+                ObjectType editingType = editingState.getType();
+                boolean publishable = editingType != null && editingType.as(ToolUi.class).isPublishable();
+            %>
+
+            <div class="widget widget-publishing"<%= publishable ? " data-publishable" : "" %>>
+                <h1 class="icon icon-action-publish" data-rtc-edit-field-update-viewers><%= wp.h(wp.localize(editingState.getType(), publishable ? "action.publish" : "action.save")) %></h1>
 
                 <%
                 wp.writeStart("div", "class", "widget-controls");
@@ -749,23 +820,11 @@ wp.writeHeader(editingState.getType() != null ? editingState.getType().getLabel(
                         if (!isTrash &&
                                 !(draft != null && draft.getSchedule() != null) &&
                                 (editingState.isNew() ||
-                                !editingState.isVisible() ||
+                                editingState.as(Content.ObjectModification.class).isDraft() ||
                                 draft != null ||
                                 editingState.as(Workflow.Data.class).getCurrentState() != null)) {
 
-                            Workflow workflow = Query
-                                    .from(Workflow.class)
-                                    .and("sites = ?", site)
-                                    .and("contentTypes = ?", editingState.getType())
-                                    .first();
-
-                            if (workflow == null) {
-                                workflow = Query
-                                        .from(Workflow.class)
-                                        .and("sites = missing")
-                                        .and("contentTypes = ?", editingState.getType())
-                                        .first();
-                            }
+                            Workflow workflow = Workflow.findWorkflow(site, editingState);
 
                             if (workflow != null) {
                                 State workflowParentState = draft != null ? draft.getState() : editingState;
@@ -828,13 +887,7 @@ wp.writeHeader(editingState.getType() != null ? editingState.getType().getLabel(
                                             }
 
                                             if (draft == null
-                                                    && (wp.hasPermission("type/" + editingState.getTypeId() + "/workflow.saveAllowed." + currentState)
-                                                    || workflow.getTransitionsTo(currentState)
-                                                            .keySet()
-                                                            .stream()
-                                                            .filter(name -> wp.hasPermission("type/" + editingState.getTypeId() + "/" + name))
-                                                            .findFirst()
-                                                            .isPresent())) {
+                                                    && wp.hasPermission("type/" + editingState.getTypeId() + "/workflow.saveAllowed." + currentState)) {
 
                                                 displayWorkflowSave = true;
                                             }
@@ -842,9 +895,18 @@ wp.writeHeader(editingState.getType() != null ? editingState.getType().getLabel(
                                         wp.writeEnd();
                                     }
 
-                                    wp.writeStart("div", "class", "widget-publishingWorkflow");
-                                        if (!transitionNames.isEmpty()) {
-                                            WorkflowLog newLog = new WorkflowLog();
+                                    if (!transitionNames.isEmpty()) {
+                                        wp.writeStart("div", "class", "widget-publishingWorkflow");
+                                            WorkflowLog newLog = editingState.as(Workflow.Data.class).getCurrentLog();
+
+                                            if (newLog == null) {
+                                                newLog = new WorkflowLog();
+                                                newLog.getState().setId(wp.param(UUID.class, "workflowLogId"));
+                                            }
+
+                                            if (wp.isFormPost()) {
+                                                wp.updateUsingParameters(newLog);
+                                            }
 
                                             if (log != null) {
                                                 for (ObjectField field : ObjectType.getInstance(WorkflowLog.class).getFields()) {
@@ -887,8 +949,8 @@ wp.writeHeader(editingState.getType() != null ? editingState.getType().getLabel(
                                                     wp.writeHtml(entry.getValue());
                                                 wp.writeEnd();
                                             }
-                                        }
-                                    wp.writeEnd();
+                                        wp.writeEnd();
+                                    }
                                 }
                             }
                         }
@@ -903,7 +965,7 @@ wp.writeHeader(editingState.getType() != null ? editingState.getType().getLabel(
 
                         } else if (!isTrash) {
                             wp.writeStart("div", "class", "widget-publishingPublish");
-                                if (wp.getUser().getCurrentSchedule() == null) {
+                                if (publishable && wp.getUser().getCurrentSchedule() == null) {
                                     if (!contentData.isDraft() && schedule != null) {
                                         boolean newSchedule = wp.paramOrDefault(boolean.class, "newSchedule", false);
 
@@ -925,12 +987,15 @@ wp.writeHeader(editingState.getType() != null ? editingState.getType().getLabel(
                                     }
 
                                     DateTime publishDate;
+                                    String scheduleLabel;
 
                                     if (schedule != null) {
                                         publishDate = wp.toUserDateTime(schedule.getTriggerDate());
+                                        scheduleLabel = wp.localize(editingType, "action.reschedule");
 
                                     } else {
                                         publishDate = wp.param(DateTime.class, "publishDate");
+                                        scheduleLabel = wp.localize(editingType, "action.schedule");
 
                                         if (publishDate == null &&
                                                 (isDraft ||
@@ -947,19 +1012,21 @@ wp.writeHeader(editingState.getType() != null ? editingState.getType().getLabel(
                                             "type", "text",
                                             "class", "date dateInput",
                                             "data-emptylabel", "Now",
+                                            "data-schedule-label", scheduleLabel,
                                             "name", "publishDate",
                                             "size", 9,
-                                            "value", publishDate != null ? publishDate.toString("yyyy-MM-dd HH:mm:ss") : "");
+                                            "value", publishDate != null ? publishDate.getMillis() : null);
                                 }
 
                                 wp.writeStart("button",
                                         "name", "action-publish",
+                                        "data-schedule-label", wp.localize(editingType, "action.schedule"),
                                         "value", "true");
                                     ObjectType type = editingState.getType();
                                     if (type != null) {
-                                        wp.writeHtml(ObjectUtils.firstNonBlank(type.as(ToolUi.class).getPublishButtonText(), wp.localize(type, "action.publish")));
+                                        wp.writeHtml(ObjectUtils.firstNonBlank(type.as(ToolUi.class).getPublishButtonText(), wp.localize(type, publishable ? "action.publish" : "action.save")));
                                     } else {
-                                        wp.writeHtml(wp.localize(type, "action.publish"));
+                                        wp.writeHtml(wp.localize(type, publishable ? "action.publish" : "action.save"));
                                     }
                                 wp.writeEnd();
                             wp.writeEnd();
@@ -969,7 +1036,7 @@ wp.writeHeader(editingState.getType() != null ? editingState.getType().getLabel(
 
                 wp.writeStart("div", "class", "widget-publishingExtra");
                     wp.writeStart("ul", "class", "widget-publishingExtra-left");
-                        if ((!lockedOut || editAnyway) && isWritable) {
+                        if (publishable && (overlay == null && (!lockedOut || editAnyway) && isWritable)) {
                             if (isDraft) {
                                 if (schedule == null) {
                                     wp.writeStart("li");
@@ -980,6 +1047,15 @@ wp.writeHeader(editingState.getType() != null ? editingState.getType().getLabel(
                                             wp.writeHtml(wp.localize(editingState.getType(), "action.save.draft"));
                                         wp.writeEnd();
                                     wp.writeEnd();
+
+                                    wp.writeStart("li", "class", "DraftAndReturnAction");
+                                        wp.writeStart("button",
+                                                "class", "link icon icon-action-save",
+                                                "name", "action-draftAndReturn",
+                                                "value", "true");
+                                            wp.writeHtml(wp.localize(editingState.getType(), "action.saveAndReturn.draft"));
+                                        wp.writeEnd();
+                                    wp.writeEnd();
                                 }
 
                                 if (draft != null && !draft.isNewContent()) {
@@ -987,8 +1063,8 @@ wp.writeHeader(editingState.getType() != null ? editingState.getType().getLabel(
                                         wp.writeStart("a",
                                                 "class", "icon icon-arrow-left",
                                                 "href", wp.url("", "draftId", null));
-                                            wp.writeHtml("Back to ");
-                                            wp.writeHtml(!visible ? "Initial Draft" : "Live");
+                                            wp.writeHtml(wp.localize(editingState.getType(),
+                                                    !visible ? "action.backToInitialDraft" : "action.backToLive"));
                                         wp.writeEnd();
                                     wp.writeEnd();
                                 }
@@ -999,7 +1075,20 @@ wp.writeHeader(editingState.getType() != null ? editingState.getType().getLabel(
                                             "class", "link icon icon-object-draft",
                                             "name", "action-newDraft",
                                             "value", "true");
-                                        wp.writeHtml(wp.localize(editingState.getType(), "action.new.draft"));
+                                        wp.writeHtml(wp.localize(
+                                                editingState.getType(),
+                                                editingState.isNew()
+                                                        ? "action.new.initialDraft"
+                                                        : "action.new.draft"));
+                                    wp.writeEnd();
+                                wp.writeEnd();
+
+                                wp.writeStart("li", "class", "NewDraftAndReturnAction");
+                                    wp.writeStart("button",
+                                            "class", "link icon icon-object-draft",
+                                            "name", "action-newDraftAndReturn",
+                                            "value", "true");
+                                        wp.writeHtml(wp.localize(editingState.getType(), "action.newAndReturn.draft"));
                                     wp.writeEnd();
                                 wp.writeEnd();
 
@@ -1010,6 +1099,15 @@ wp.writeHeader(editingState.getType() != null ? editingState.getType().getLabel(
                                             "name", "action-draft",
                                             "value", "true");
                                         wp.writeHtml(wp.localize(editingState.getType(), "action.save.draft"));
+                                    wp.writeEnd();
+                                wp.writeEnd();
+
+                                wp.writeStart("li", "class", "DraftAndReturnAction");
+                                    wp.writeStart("button",
+                                            "class", "link icon icon-action-save",
+                                            "name", "action-draftAndReturn",
+                                            "value", "true");
+                                        wp.writeHtml(wp.localize(editingState.getType(), "action.saveAndReturn.draft"));
                                     wp.writeEnd();
                                 wp.writeEnd();
                             }
@@ -1027,7 +1125,21 @@ wp.writeHeader(editingState.getType() != null ? editingState.getType().getLabel(
                         }
                     wp.writeEnd();
 
-                    if (!lockedOut || editAnyway) {
+                    if (isWritable && overlay != null && !overlay.getState().isNew()) {
+                        wp.writeStart("ul", "class", "widget-publishingExtra-right");
+                            wp.writeStart("li");
+                                wp.writeStart("button",
+                                        "class", "link icon icon-action-delete",
+                                        "name", "action-delete",
+                                        "value", "true");
+                                wp.writeHtml(wp.localize(
+                                        overlay.getState().getType(),
+                                        "action.delete.type"));
+                                wp.writeEnd();
+                            wp.writeEnd();
+                        wp.writeEnd();
+
+                    } else if (overlay == null && (!lockedOut || editAnyway) && isWritable) {
                         wp.writeStart("ul", "class", "widget-publishingExtra-right");
                             if (isWritable && isDraft) {
                                 if (schedule != null) {
@@ -1163,8 +1275,6 @@ wp.writeHeader(editingState.getType() != null ? editingState.getType().getLabel(
                         }
                     wp.writeEnd();
 
-                    ObjectType editingType = editingState.getType();
-
                     if (editingType != null) {
                         Renderer.TypeModification rendererData = editingType.as(Renderer.TypeModification.class);
                         List<Object> refs = Query.
@@ -1255,6 +1365,7 @@ wp.writeHeader(editingState.getType() != null ? editingState.getType().getLabel(
                             }
                         wp.writeEnd();
                     }
+                    PreviewUtils.renderTargettingRulesFields(wp, editing);
                 wp.writeEnd();
                 %>
             </div>
@@ -1283,501 +1394,16 @@ wp.writeHeader(editingState.getType() != null ? editingState.getType().getLabel(
     <% } %>
 
     <script type="text/javascript">
-        (function($, win, undef) {
-            var PEEK_WIDTH = 99,
-                    $win = $(win),
-                    doc = win.document,
-                    $doc = $(doc),
-                    $body = $(doc.body),
-
-                    $edit = $('.content-edit'),
-                    $publishingExtra = $('.widget-publishingExtra-left'),
-                    $previewAction,
-                    appendPreviewAction,
-                    removePreviewAction,
-
-                    $preview = $('.contentPreview'),
-                    $previewWidget = $preview.find('.widget-preview'),
-                    $previewHeading = $preview.find('h1'),
-                    showPreview,
-                    previewEventsBound,
-                    hidePreview,
-
-                    getUniqueColor,
-                    fieldHue = Math.random(),
-                    GOLDEN_RATIO = 0.618033988749895;
-
-            if ($edit.closest('.popup').length > 0) {
-                return;
-            }
-
-            // Append a link for activating the preview.
-            appendPreviewAction = function() {
-                $previewAction = $('<li/>', {
-                    'html': $('<a/>', {
-                        'class': 'action-preview',
-                        'href': '#',
-                        'text': 'Preview',
-                        'click': function() {
-                            removePreviewAction();
-                            showPreview();
-                            $previewHeading.click();
-                            return false;
-                        }
-                    })
-                });
-
-                $publishingExtra.append($previewAction);
-            };
-
-            removePreviewAction = function() {
-                $previewAction.remove();
-                $previewAction = null;
-            };
-
-            // Show a peekable preview widget.
-            showPreview = function() {
-                var $previewForm = $('#<%= previewFormId %>'),
-                        $contentForm = $('.contentForm'),
-                        action = win.location.href,
-                        questionAt = action.indexOf('?'),
-                        oldFormData,
-                        loadPreview;
-
-                $previewWidget.addClass('widget-loading');
-                $preview.show();
-
-                $edit.css({
-                    'max-width': 1100
-                });
-
-                if (!previewEventsBound) {
-                    $preview.append($('<span/>', {
-                        'class': 'contentPreviewClose',
-                        'text': 'Close',
-                        'click': function() {
-                            hidePreview();
-                            return false;
-                        }
-                    }));
-
-                    // Preview should be roughly the same width as the window.
-                    $win.resize($.throttle(500, function() {
-                        if (!$preview.is(':visible')) {
-                            return;
-                        }
-
-                        var $toolHeader = $('.toolHeader');
-
-                        $preview.css('width', '');
-                        $edit.css('margin-right', $preview.outerWidth(true));
-
-                        var $widgetWidth = $win.width() - PEEK_WIDTH;
-                        var $widgetControls = $('.widget-preview_controls');
-
-                        $widgetControls.width($widgetWidth - 60);
-                        $('.widget-previewFrameContainer').css('top', $widgetControls.outerHeight(true) + 40);
-                        $preview.css({
-                            top: $toolHeader.offset().top + $toolHeader.outerHeight() - $win.scrollTop(),
-                            width: $previewWidget.is('.widget-expanded')
-                                    ? $widgetWidth
-                                    : $win.width() - $edit.offset().left - $edit.outerWidth() + 10
-                        });
-                    }));
-
-                    // Make the preview expand/collapse when the heading is clicked.
-                    $previewHeading.click(function() {
-                        // $edit.find('.inputContainer').trigger('fieldPreview-disable');
-
-                        if ($previewWidget.is('.widget-expanded')) {
-                            $('.queryField_frames').show();
-                            $previewWidget.removeClass('widget-expanded');
-                            $preview.animate({ 'width': $win.width() - $edit.offset().left - $edit.outerWidth() + 10 }, 300, 'easeOutBack');
-
-                            $.ajax({
-                                'type': 'post',
-                                'url': CONTEXT_PATH + '/misc/updateUserSettings',
-                                'data': 'action=liveContentPreview-enable'
-                            });
-
-                        } else {
-                            $('.queryField_frames').hide();
-                            $previewWidget.addClass('widget-expanded');
-                            $preview.animate({ 'width': $win.width() - PEEK_WIDTH }, 300, 'easeOutBack');
-
-                            // $edit.find('.inputContainer').trigger('fieldPreview-enable');
-                        }
-                    });
-
-                    previewEventsBound = true;
-                }
-
-                $win.resize();
-
-                // Load the preview.
-                loadPreview = $.throttle(2000, function() {
-                    if (!$preview.is(':visible')) {
-                        return;
-                    }
-
-                    var newFormData = $contentForm.serialize();
-
-                    // If the form inputs haven't changed, try again later.
-                    if (oldFormData === newFormData) {
-                        setTimeout(loadPreview, 100);
-                        return;
-                    }
-
-                    oldFormData = newFormData;
-                    $previewWidget.addClass('widget-loading');
-
-                    // Get the correct JSON from the server.
-                    $.ajax({
-                        'data': newFormData,
-                        'type': 'post',
-                        'url': CONTEXT_PATH + 'content/state.jsp?id=<%= state.getId() %>&' + (questionAt > -1 ? action.substring(questionAt + 1) : ''),
-                        'complete': function(request) {
-                            var $previewTarget;
-
-                            // Make sure that the preview IFRAME exists.
-                            $(':input[name=<%= PageFilter.PREVIEW_OBJECT_PARAMETER %>]').val(request.responseText);
-                            $previewTarget = $('iframe[name=<%= previewTarget %>]');
-
-                            if ($previewTarget.length === 0) {
-                                $previewTarget = $('<iframe/>', {
-                                    'name': '<%= previewTarget %>',
-                                    'css': {
-                                        'width': $previewForm.find('select.deviceWidthSelect').val() || '100%'
-                                    }
-                                });
-
-                                var $container = $('<div/>', {
-                                    'class': 'widget-previewFrameContainer',
-                                    'html': $previewTarget
-                                });
-
-                                $previewWidget.append($container);
-
-                                function resizePreview() {
-                                    var deviceWidth = parseInt($previewForm.find('select.deviceWidthSelect').val(), 10);
-                                    var scale = ($win.width() - 160) / deviceWidth;
-
-                                    $previewTarget.css({
-                                        height: ($win.height() - ($container.offset().top - $win.scrollTop()) - 40) / scale,
-                                        transform: 'scale(' + (scale < 1 ? scale : 1) + ')'
-                                    });
-                                }
-
-                                resizePreview();
-                                $win.resize($.throttle(500, resizePreview));
-                            }
-
-                            $previewTarget.load(function() {
-                                $previewWidget.removeClass('widget-loading');
-                            });
-
-                            // Really load the preview.
-                            $previewForm.submit();
-                            setTimeout(loadPreview, 100);
-                        }
-                    });
-                });
-
-                loadPreview();
-            };
-
-            hidePreview = function() {
-                if ($previewWidget.is('.widget-expanded')) {
-                    $previewHeading.click();
-                }
-
-                // $edit.find('.inputContainer').trigger('fieldPreview-hide');
-                $edit.css({
-                    'max-width': '',
-                    'margin-right': ''
-                });
-
-                appendPreviewAction();
-                $preview.hide();
-                $win.resize();
-
-                $.ajax({
-                    'type': 'post',
-                    'url': CONTEXT_PATH + '/misc/updateUserSettings',
-                    'data': 'action=liveContentPreview-disable'
-                });
-            };
-
+        var PREVIEW_DATA = {
             <% if (Boolean.TRUE.equals(wp.getUser().getState().get("liveContentPreview"))) { %>
-
-                var previewInterval = window.setInterval(function() {
-
-                    var $form = $('#<%=previewFormId%>');
-
-                    if ($form.size() > 0 && $form.find('input[name="_csrf"]').size() > 0) {
-                        window.clearInterval(previewInterval);
-                        showPreview();
-                    }
-                }, 200);
-            <% } else { %>
-                appendPreviewAction();
+            live: true,
             <% } %>
-
-            // Per-field preview.
-            getUniqueColor = function($container) {
-                var color = $.data($container[0], 'fieldPreview-color');
-
-                if (!color) {
-                    fieldHue += GOLDEN_RATIO;
-                    fieldHue %= 1.0;
-                    color = 'hsl(' + (fieldHue * 360) + ', 50%, 50%)';
-                    $.data($container[0], 'fieldPreview-color', color);
-                }
-
-                return color;
-            };
-
-            $edit.delegate('.inputContainer', 'mouseenter', function() {
-                var $container = $(this),
-                        $toggle = $.data($container[0], 'fieldPreview-$toggle');
-
-                if ($preview.is(':visible')) {
-                    if (!$toggle) {
-                        $toggle = $('<span/>', {
-                            'class': 'fieldPreviewToggle'
-                        });
-
-                        $.data($container[0], 'fieldPreview-$toggle', $toggle);
-                        $container.append($toggle);
-                    }
-
-                } else if ($toggle) {
-                    $toggle.remove();
-                }
-            });
-
-            $edit.delegate('.inputContainer .fieldPreviewToggle', 'click', function() {
-                var $toggle = $(this),
-                        $container = $toggle.closest('.inputContainer');
-
-                $container.find('> .inputLabel').trigger('fieldPreview-toggle', [ $toggle ]);
-                $toggle.css('color', $container.is('.fieldPreview-displaying') ? getUniqueColor($container) : '');
-            });
-
-            $edit.delegate('.inputContainer', 'fieldPreview-enable', function() {
-                $(this).addClass('fieldPreview-enabled');
-            });
-
-            $edit.delegate('.inputContainer', 'fieldPreview-disable', function() {
-                $(this).trigger('fieldPreview-hide').removeClass('fieldPreview-enabled');
-            });
-
-            $edit.delegate('.inputContainer', 'fieldPreview-hide', function() {
-                var $container = $(this),
-                        name = $container.attr('data-name');
-
-                $container.removeClass('fieldPreview-displaying');
-                $container.find('> .inputLabel').css({
-                    'background-color': '',
-                    'color': ''
-                });
-
-                $('.fieldPreviewTarget[data-name="' + name + '"]').remove();
-                $('.fieldPreviewPaths[data-name="' + name + '"]').remove();
-            });
-
-            $edit.delegate('.inputContainer', 'fieldPreview-toggle', function(event, $source) {
-                var $container = $(this),
-                        name = $container.attr('data-name'),
-                        color,
-
-                        $frame,
-                        frameOffset,
-
-                        $paths,
-                        pathsCanvas;
-
-                event.stopPropagation();
-
-                if ($container.is('.fieldPreview-displaying')) {
-                    $container.trigger('fieldPreview-hide');
-                    return;
-                }
-
-                color = getUniqueColor($container);
-
-                $frame = $preview.find('iframe');
-                frameOffset = $frame.offset();
-
-                $container.addClass('fieldPreview-displaying');
-                $container.find('> .inputLabel').css({
-                    'background-color': color,
-                    'color': 'white'
-                });
-
-                // Draw arrows between the label and the previews.
-                $paths = $('<canvas/>', {
-                    'class': 'fieldPreviewPaths',
-                    'data-name': name,
-                    'css': {
-                        'left': 0,
-                        'pointer-events': 'none',
-                        'position': 'absolute',
-                        'top': 0,
-                        'z-index': 5
-                    }
-                });
-
-                // For browsers that don't support pointer-events.
-                $paths.click(function() {
-                    $edit.find('.inputContainer').trigger('fieldPreview-hide');
-                });
-
-                $paths.attr({
-                    'width': $doc.width(),
-                    'height': $doc.height()
-                });
-
-                $body.append($paths);
-
-                pathsCanvas = $paths[0].getContext('2d');
-
-                var PLACEHOLDER_PREFIX = 'brightspot.field-access '
-                var frameDocument = $frame[0].contentDocument;
-                var frameCommentWalker = frameDocument.createTreeWalker(frameDocument.body, NodeFilter.SHOW_COMMENT, null, null);
-
-                while (frameCommentWalker.nextNode()) {
-                    var placeholder = frameCommentWalker.currentNode;
-                    var placeholderValue = placeholder.nodeValue;
-
-                    if (placeholderValue.indexOf(PLACEHOLDER_PREFIX) !== 0) {
-                        continue;
-                    }
-
-                    var placeholderData = $.parseJSON(placeholderValue.substring(PLACEHOLDER_PREFIX.length));
-
-                    if (placeholderData.name !== name) {
-                        continue;
-                    }
-
-                    var $placeholder = $(frameCommentWalker.currentNode),
-                            $target,
-                            targetOffset,
-                            pathSourceX, pathSourceY, pathSourceDirection,
-                            pathTargetX, pathTargetY, pathTargetDirection,
-                            sourceOffset,
-                            targetOffset,
-                            isBackReference = false,
-                            pathSourceControlX,
-                            pathSourceControlY,
-                            pathTargetControlX,
-                            pathTargetControlY;
-
-                    if ($placeholder.parent().is('body')) {
-                        continue;
-                    }
-
-                    $target = $placeholder.nextAll(':visible:first');
-
-                    if ($target.length === 0) {
-                        $target = $placeholder.parent();
-                    }
-
-                    if ($target.find('> * [data-name="' + name + '"]').length > 0) {
-                        continue;
-                    }
-
-                    targetOffset = $target.offset();
-
-                    $body.append($('<span/>', {
-                        'class': 'fieldPreviewTarget',
-                        'data-name': name,
-                        'css': {
-                            'outline-color': color,
-                            'height': $target.outerHeight(),
-                            'left': frameOffset.left + targetOffset.left,
-                            'position': 'absolute',
-                            'top': frameOffset.top + targetOffset.top,
-                            'width': $target.outerWidth()
-                        }
-                    }));
-
-                    if (!$source) {
-                        $source = $container.find('> .inputLabel');
-                    }
-
-                    sourceOffset = $source.offset();
-                    targetOffset = $target.offset();
-                    targetOffset.left += frameOffset.left;
-                    targetOffset.top += frameOffset.top;
-
-                    if (sourceOffset.left > targetOffset.left) {
-                        var targetWidth = $target.outerWidth();
-                        pathTargetX = targetOffset.left + targetWidth + 3;
-                        pathTargetY = targetOffset.top + $target.outerHeight() / 2;
-                        isBackReference = true;
-
-                        if (targetOffset.left + targetWidth > sourceOffset.left) {
-                            pathSourceX = sourceOffset.left + $source.width();
-                            pathSourceY = sourceOffset.top + $source.height() / 2;
-                            pathSourceDirection = 1;
-                            pathTargetDirection = 1;
-
-                        } else {
-                            pathSourceX = sourceOffset.left;
-                            pathSourceY = sourceOffset.top + $source.height() / 2;
-                            pathSourceDirection = -1;
-                            pathTargetDirection = 1;
-                        }
-
-                    } else {
-                        pathSourceX = sourceOffset.left + $source.width();
-                        pathSourceY = sourceOffset.top + $source.height() / 2;
-                        pathTargetX = targetOffset.left - 3;
-                        pathTargetY = targetOffset.top + $target.height() / 2;
-                        pathSourceDirection = 1;
-                        pathTargetDirection = -1;
-                    }
-
-                    pathSourceControlX = pathSourceX + pathSourceDirection * 100;
-                    pathSourceControlY = pathSourceY;
-                    pathTargetControlX = pathTargetX + pathTargetDirection * 100;
-                    pathTargetControlY = pathTargetY;
-
-                    pathsCanvas.strokeStyle = color;
-                    pathsCanvas.fillStyle = color;
-
-                    // Reference curve.
-                    pathsCanvas.lineWidth = isBackReference ? 0.4 : 1.0;
-                    pathsCanvas.beginPath();
-                    pathsCanvas.moveTo(pathSourceX, pathSourceY);
-                    pathsCanvas.bezierCurveTo(pathSourceControlX, pathSourceControlY, pathTargetControlX, pathTargetControlY, pathTargetX, pathTargetY);
-                    pathsCanvas.stroke();
-
-                    // Arrow head.
-                    var arrowSize = pathTargetX > pathTargetControlX ? 5 : -5;
-                    if (isBackReference) {
-                        arrowSize *= 0.8;
-                    }
-                    pathsCanvas.beginPath();
-                    pathsCanvas.moveTo(pathTargetX, pathTargetY);
-                    pathsCanvas.lineTo(pathTargetX - 2 * arrowSize, pathTargetY - arrowSize);
-                    pathsCanvas.lineTo(pathTargetX - 2 * arrowSize, pathTargetY + arrowSize);
-                    pathsCanvas.closePath();
-                    pathsCanvas.fill();
-                }
-            });
-
-            $edit.delegate('.inputContainer', 'click', function() {
-                if ($previewWidget.is('.widget-expanded')) {
-                    $(this).trigger('fieldPreview-toggle');
-                    return false;
-
-                } else {
-                    return true;
-                }
-            });
-        })(jQuery, window);
+            formId: '<%= previewFormId %>',
+            target: '<%= previewTarget %>',
+            stateId: '<%= state.getId() %>',
+            objectParameter: '<%= PageFilter.PREVIEW_OBJECT_PARAMETER %>'
+        };
+        require(['v3/content/preview']);
     </script>
 <% } %>
 
@@ -1787,6 +1413,7 @@ wp.writeHeader(editingState.getType() != null ? editingState.getType().getLabel(
 private static void renderWidgets(ToolPageContext wp, Object object, String position) throws Exception {
 
     State state = State.getInstance(object);
+    ObjectType type = state.getType();
     List<Widget> widgets = null;
     for (List<Widget> item : wp.getTool().findWidgets(position)) {
         widgets = item;
@@ -1799,12 +1426,17 @@ private static void renderWidgets(ToolPageContext wp, Object object, String posi
         wp.write("\">");
 
         for (Widget widget : widgets) {
-            if (!wp.hasPermission(widget.getPermissionId())) {
+
+            if (object instanceof ContentEditWidgetDisplay) {
+                if (!((ContentEditWidgetDisplay) object).shouldDisplayContentEditWidget(widget.getInternalName())) {
+                    continue;
+                }
+
+            } else if((type == null || !type.as(ToolUi.class).isPublishable()) && !widget.shouldDisplayInNonPublishable()) {
                 continue;
             }
 
-            if (object instanceof ContentEditWidgetDisplay
-                    && !((ContentEditWidgetDisplay) object).shouldDisplayContentEditWidget(widget.getInternalName())) {
+            if (!wp.hasPermission(widget.getPermissionId())) {
                 continue;
             }
 
