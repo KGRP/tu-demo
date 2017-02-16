@@ -10,10 +10,11 @@ import com.psddev.dari.db.Query;
 import com.psddev.dari.db.Record;
 import com.psddev.dari.db.State;
 import com.psddev.dari.util.ObjectUtils;
+import com.psddev.dari.util.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -25,20 +26,52 @@ public class PreviewUtils {
 
     public static void renderTargettingRulesFields(ToolPageContext wp, Object object) throws IOException {
 
-        Set<ExtendedAttributeValue> extendedAttributeValues = new HashSet<>();
+        Map<ExtendedAttributeValue, Set<String>> extendedAttributeValues = new HashMap<>();
 
         generateRuleElements(extendedAttributeValues, object);
 
-        extendedAttributeValues.stream()
+        extendedAttributeValues.keySet().stream()
                 .filter(Objects::nonNull)
                 .forEach(extendedAttributeValue -> {
                     try {
                         wp.writeHtml(" ");
-                        wp.writeElement("input",
-                                "type", "text",
-                                "style", "width: 10em",
-                                "name", extendedAttributeValue.getId().toString(),
-                                "placeholder", extendedAttributeValue.getLabel());
+
+                        Set<String> values = extendedAttributeValues.get(extendedAttributeValue);
+
+                        if (ObjectUtils.isBlank(values)) {
+                            wp.writeElement("input",
+                                    "type", "text",
+                                    "style", "width: 10em",
+                                    "name", extendedAttributeValue.getId().toString(),
+                                    "placeholder", extendedAttributeValue.getLabel());
+                        } else {
+                            wp.writeStart("select",
+                                    "name", extendedAttributeValue.getId().toString(),
+                                    "onchange", "var $input = $(this)," +
+                                            "$form = $input.closest('form');" +
+                                            "$('iframe[name=\"' + $form.attr('target') + '\"]').css('width', $input.val() || '100%');" +
+                                            "$form.submit();");
+
+                            wp.writeStart("option",
+                                    "value", "",
+                                    "selected", "");
+                            wp.writeHtml("Default");
+                            wp.writeEnd();
+
+                            values.stream()
+                                    .filter(Objects::nonNull)
+                                    .forEach(value -> {
+                                        try {
+                                            wp.writeStart("option", "value", value);
+                                            wp.writeHtml(StringUtils.toLabel(value));
+                                            wp.writeEnd();
+                                        } catch (IOException e) {
+                                           LOGGER.error(e);
+                                        }
+                                    });
+
+                            wp.writeEnd();
+                        }
                     } catch (IOException e) {
                         LOGGER.error(e);
                     }
@@ -50,7 +83,7 @@ public class PreviewUtils {
         wp.writeEnd();
     }
 
-    private static void generateRuleElements(Set<ExtendedAttributeValue> extendedAttributeValues, Object object) {
+    private static void generateRuleElements(Map<ExtendedAttributeValue, Set<String>> extendedAttributeValues, Object object) {
 
         if (object instanceof List) {
             for (Object l : (List) object) {
@@ -84,9 +117,14 @@ public class PreviewUtils {
                 }
             } else if (record instanceof Rule) {
                 Action action = ((Rule) record).getAction();
-                generateRuleElements(extendedAttributeValues, action.getState().getRawValues());
-            } else if (record instanceof ExtendedAttributeValue) {
-                extendedAttributeValues.add((ExtendedAttributeValue) record);
+
+                ExtendedAttributeValue extendedAttributeValue = action.getValue();
+                Set<String> values = action.getValuesForPreviewSimulation();
+
+                if (extendedAttributeValues.containsKey(extendedAttributeValue)) {
+                    values.addAll(extendedAttributeValues.get(action.getValue()));
+                }
+                extendedAttributeValues.put(action.getValue(), values);
             } else {
                 State state = State.getInstance(object);
                 generateRuleElements(extendedAttributeValues, state.getRawValues());

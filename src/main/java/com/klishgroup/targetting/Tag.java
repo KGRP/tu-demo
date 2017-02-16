@@ -8,7 +8,6 @@ import com.psddev.dari.util.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-@Recordable.Embedded
 @Recordable.LabelFields("attribute.name")
 public class Tag extends Record {
 

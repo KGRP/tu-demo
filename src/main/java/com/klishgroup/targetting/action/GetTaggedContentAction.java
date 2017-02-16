@@ -3,7 +3,10 @@ package com.klishgroup.targetting.action;
 import com.klishgroup.targetting.Action;
 import com.klishgroup.targetting.ExtendedAttributeValue;
 import com.klishgroup.targetting.ExtendedAttribute;
+import com.klishgroup.targetting.Tag;
 import com.klishgroup.targetting.Taggable;
+import com.psddev.cms.db.ToolUi;
+import com.psddev.dari.db.Grouping;
 import com.psddev.dari.db.ObjectType;
 import com.psddev.dari.db.Query;
 import com.psddev.dari.db.Record;
@@ -11,15 +14,18 @@ import com.psddev.dari.util.ObjectUtils;
 import com.psddev.dari.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class GetTaggedContentAction extends Action {
 
-    @Required
-    private ExtendedAttribute attribute;
+    private static final String TAGGABLE_ATTRIBUTE = ObjectType.getInstance(Taggable.class).getInternalName() + "/tg.tags/attribute";
+    private static final String TAGGABLE_VALUES = ObjectType.getInstance(Taggable.class).getInternalName() + "/tg.tags/values";
 
     @Required
-    private ExtendedAttributeValue value;
+    @ToolUi.DisplayFirst
+    private ExtendedAttribute attribute;
 
     public ExtendedAttribute getAttribute() {
         return attribute;
@@ -27,14 +33,6 @@ public class GetTaggedContentAction extends Action {
 
     public void setAttribute(ExtendedAttribute attribute) {
         this.attribute = attribute;
-    }
-
-    public ExtendedAttributeValue getValue() {
-        return value;
-    }
-
-    public void setValue(ExtendedAttributeValue value) {
-        this.value = value;
     }
 
     /**
@@ -60,11 +58,28 @@ public class GetTaggedContentAction extends Action {
             return null;
         }
 
-        String taggableAttribute = ObjectType.getInstance(Taggable.class).getInternalName() + "/tg.tags/attribute";
-        String taggableValues = ObjectType.getInstance(Taggable.class).getInternalName() + "/tg.tags/values";
         String tagValue = value.getOriginalOrSimulatedAttributeValue(request);
 
-        return Query.from(Record.class).where("_type = ? and " + taggableAttribute + " = ? and " + taggableValues + " = ?",
+        return Query.from(Record.class).where("_type = ? and " + TAGGABLE_ATTRIBUTE + " = ? and " + TAGGABLE_VALUES + " = ?",
                 objectType, getAttribute(), tagValue).sortDescending("cms.content.publishDate").selectAll();
+    }
+
+    @Override
+    public Set<String> getValuesForPreviewSimulation() {
+
+        Set<String> values = new HashSet<>();
+
+        List<Grouping<Taggable>> groupings = Query.from(Taggable.class)
+                .where(TAGGABLE_ATTRIBUTE + " = ?", getAttribute())
+                .groupBy(TAGGABLE_VALUES);
+
+        for (Grouping<Taggable> grouping : groupings) {
+            String value = (String) grouping.getKeys().get(0);
+
+            if (!StringUtils.isBlank(value)) {
+                values.add(value);
+            }
+        }
+        return values;
     }
 }

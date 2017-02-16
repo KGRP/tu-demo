@@ -20,6 +20,7 @@ public interface Taggable extends Recordable {
 
         @ToolUi.Tab("Tagging")
         @Indexed
+        @Embedded
         private List<Tag> tags;
 
         public List<Tag> getTags() {
